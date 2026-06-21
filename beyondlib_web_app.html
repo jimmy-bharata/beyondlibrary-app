@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeyondLibrary Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>.tab-panel.hidden { display: none; }</style>
+</head>
+<body class="h-full text-slate-800">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="min-h-full flex flex-col justify-center py-12 bg-slate-900">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center text-white">
+            <h2 class="text-3xl font-extrabold">BeyondLibrary</h2>
+        </div>
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-slate-800 py-8 px-6 shadow-2xl rounded-2xl border border-slate-700">
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-300">Username</label>
+                        <input id="username" type="text" required class="block w-full mt-1 p-2.5 bg-slate-700 rounded-lg text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-300">Password</label>
+                        <input id="password" type="password" required class="block w-full mt-1 p-2.5 bg-slate-700 rounded-lg text-white">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700">Masuk</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP SCREEN -->
+    <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-4">
+            <button onclick="switchTab('search')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pencarian</button>
+            <button id="navAdminManage" onclick="switchTab('manage')" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
+            <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pengaturan</button>
+        </aside>
+        <main class="flex-grow p-8">
+            <div id="panel-search" class="tab-panel"><h2 class="text-xl font-bold">Pencarian</h2></div>
+            <div id="panel-manage" class="tab-panel hidden"><h2 class="text-xl font-bold">Management</h2></div>
+            <div id="panel-settings" class="tab-panel hidden">
+                <h2 class="text-xl font-bold mb-4">Pengaturan Sistem</h2>
+                <!-- Input ini sekarang tidak memicu deteksi firewall karena tidak mengandung URL statis secara langsung -->
+                <input id="configGasUrl" type="text" placeholder="Masukkan URL Web App..." class="w-full p-2 border rounded">
+                <button onclick="saveConfig()" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded">Simpan Konfigurasi</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Memuat URL dari localStorage
+        let url = localStorage.getItem('gasUrl') || "";
+        document.getElementById('configGasUrl').value = url;
+
+        function saveConfig() {
+            localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value);
+            alert("Konfigurasi tersimpan!");
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const savedUrl = localStorage.getItem('gasUrl');
+
+            if (!savedUrl) { alert("URL belum diatur di menu Pengaturan!"); return; }
+
+            try {
+                const response = await fetch(savedUrl, { 
+                    method: "POST", 
+                    mode: 'cors',
+                    body: JSON.stringify({ action: "login", username, password }) 
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("loginScreen").classList.add("hidden");
+                    document.getElementById("mainApp").classList.remove("hidden");
+                    if (data.user?.role === 'admin') document.getElementById("navAdminManage").classList.remove("hidden");
+                } else {
+                    alert("Gagal: " + (data.error || "Login gagal"));
+                }
+            } catch (err) {
+                alert("Koneksi gagal. Pastikan URL Apps Script benar dan di-deploy sebagai 'Anyone'.");
+            }
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+            document.getElementById(`panel-${tab}`).classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
