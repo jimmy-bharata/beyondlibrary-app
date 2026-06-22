@@ -14,7 +14,6 @@
     <div id="loginScreen" class="min-h-full flex flex-col justify-center py-12 bg-slate-900">
         <div class="sm:mx-auto sm:w-full sm:max-w-md text-center text-white">
             <h2 class="text-3xl font-extrabold">BeyondLibrary</h2>
-            <!-- TOMBOL PENGATURAN DI LAYAR LOGIN -->
             <button onclick="document.getElementById('configPanel').classList.toggle('hidden')" class="mt-4 text-xs text-slate-400 underline">Atur URL Backend</button>
             <div id="configPanel" class="hidden mt-4 p-4 bg-slate-800 rounded-lg text-left border border-slate-700">
                 <input id="configGasUrl" type="text" placeholder="https://script.google.com/..." class="w-full p-2 bg-slate-700 rounded text-white text-sm border border-slate-600">
@@ -42,7 +41,7 @@
     <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
         <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-4">
             <button onclick="switchTab('search')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pencarian</button>
-            <button id="navAdminManage" onclick="switchTab('manage')" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
+            <button id="navAdminManage" onclick="hidden" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
             <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pengaturan</button>
         </aside>
         <main class="flex-grow p-8">
@@ -57,7 +56,6 @@
     </div>
 
     <script>
-        // Init input values
         let savedUrl = localStorage.getItem('gasUrl') || "";
         document.getElementById('configGasUrl').value = savedUrl;
         document.getElementById('configGasUrlMain').value = savedUrl;
@@ -79,7 +77,7 @@
             const password = document.getElementById("password").value;
             const url = localStorage.getItem('gasUrl');
 
-            if (!url) { alert("URL belum diatur! Klik 'Atur URL Backend' di atas."); return; }
+            if (!url) { alert("URL belum diatur!"); return; }
 
             try {
                 const response = await fetch(url, { 
@@ -87,17 +85,29 @@
                     mode: 'cors',
                     body: JSON.stringify({ action: "login", username, password }) 
                 });
+
+                const textResponse = await response.text();
                 
-                const data = await response.json();
+                let data;
+                try {
+                    data = JSON.parse(textResponse);
+                } catch (e) {
+                    console.error("Server tidak mengirim JSON:", textResponse);
+                    alert("Error: Server tidak mengirim format JSON. Respon server: " + textResponse.substring(0, 50));
+                    return;
+                }
+
                 if (data.success) {
                     document.getElementById("loginScreen").classList.add("hidden");
                     document.getElementById("mainApp").classList.remove("hidden");
-                    if (data.user?.role === 'admin') document.getElementById("navAdminManage").classList.remove("hidden");
+                    if (data.user?.role?.toLowerCase() === 'admin') {
+                        document.getElementById("navAdminManage").classList.remove("hidden");
+                    }
                 } else {
                     alert("Gagal: " + (data.error || "Login gagal"));
                 }
             } catch (err) {
-                alert("Koneksi gagal. Pastikan URL Apps Script benar dan di-deploy sebagai 'Anyone'.");
+                alert("Koneksi gagal. Pastikan URL benar.");
             }
         });
 
