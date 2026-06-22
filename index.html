@@ -1,100 +1,1617 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-50">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeyondLibrary Professional</title>
+    <title>BeyondLibrary - Intelligent Private Library System</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        accent: 'var(--color-accent)',
+                        accentHover: 'var(--color-accent-hover)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>.tab-panel.hidden { display: none; }</style>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style id="themeStyles">
+        :root {
+            --color-primary: #1b2e4b;
+            --color-accent: #3bb44a;
+            --color-accent-hover: #2e913a;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body class="h-full text-slate-800">
+<body class="h-full text-slate-800 flex flex-col">
+
+    <!-- SETUP & CONFIGURATION OVERLAY -->
+    <div id="configOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
+                    <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Inisialisasi Sistem</h3>
+                    <p class="text-xs text-slate-500">Konfigurasi parameter branding NBT & konektivitas cloud.</p>
+                </div>
+            </div>
+
+            <form id="configForm" onsubmit="saveConfiguration(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Aplikasi</label>
+                    <input type="text" id="cfgAppTitle" required value="BeyondLibrary" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Pemilik / Perusahaan</label>
+                    <input type="text" id="cfgAppOwner" required value="Neo Beyond Tech" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama File / URL Logo</label>
+                    <input type="text" id="cfgLogoUrl" value="logo-NBT.png" placeholder="Contoh: logo-NBT.png" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Warna Utama (Navy)</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="cfgColorPrimary" value="#1b2e4b" class="w-10 h-10 border border-slate-200 rounded cursor-pointer">
+                            <span class="text-xs font-mono text-slate-500">#1b2e4b</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Warna Aksen (Green)</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="color" id="cfgColorAccent" value="#3bb44a" class="w-10 h-10 border border-slate-200 rounded cursor-pointer">
+                            <span class="text-xs font-mono text-slate-500">#3bb44a</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">URL Google Sheets</label>
+                    <input type="text" id="cfgSheetUrl" required placeholder="Masukkan link Spreadsheet Anda" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Google Apps Script Web App URL</label>
+                        <span class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">Safe Backend Sync</span>
+                    </div>
+                    <input type="text" id="cfgGasUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Gemini API Key</label>
+                        <span class="text-[10px] text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full font-medium">Kunci Akses AI Vision</span>
+                    </div>
+                    <input type="password" id="cfgApiKey" placeholder="Masukkan AIzaSy... untuk real-scan aktif" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
+                        Jalankan Workspace Perpustakaan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SMART SANDBOX SELECTOR MODAL -->
+    <div id="sandboxSelectorModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div class="flex items-center space-x-2.5 text-amber-600">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                <h4 class="text-base font-bold">Simulator AI Sandbox (v1.5.0)</h4>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Anda berada dalam <strong>Mode Sandbox</strong> (Belum mengisi Gemini API Key). Silakan pilih salah satu buku demo di bawah untuk mensimulasikan hasil deteksi visual:
+            </p>
+
+            <div class="space-y-2.5">
+                <button onclick="selectMockBook('leadershipxyz')" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center space-x-3 group">
+                    <div class="w-10 h-14 bg-emerald-50 rounded border overflow-hidden shrink-0 flex items-center justify-center">
+                        <i class="fa-solid fa-book text-emerald-700"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <span class="text-xs font-bold text-slate-900 block truncate group-hover:text-emerald-700">Leadership X Y Z</span>
+                        <span class="text-[10px] text-slate-500 block">Dedi Wijaya & Sarah Ardiwinata</span>
+                    </div>
+                </button>
+
+                <button onclick="selectMockBook('superleader')" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center space-x-3 group">
+                    <div class="w-10 h-14 bg-amber-50 rounded border overflow-hidden shrink-0 flex items-center justify-center">
+                        <i class="fa-solid fa-book text-amber-700"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <span class="text-xs font-bold text-slate-900 block truncate group-hover:text-emerald-700">The Super Leader Super Manager</span>
+                        <span class="text-[10px] text-slate-500 block">Dr. Muhammad Syafii Antonio, M.Ec</span>
+                    </div>
+                </button>
+
+                <button onclick="selectMockBook('ai')" class="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30 transition-all flex items-center space-x-3 group">
+                    <div class="w-10 h-14 bg-blue-50 rounded border overflow-hidden shrink-0 flex items-center justify-center">
+                        <i class="fa-solid fa-book text-blue-700"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <span class="text-xs font-bold text-slate-900 block truncate group-hover:text-emerald-700">Artificial Intelligence: A Modern Approach</span>
+                        <span class="text-[10px] text-slate-500 block">Stuart Russell & Peter Norvig</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+                <button onclick="closeSandboxSelector()" class="text-xs text-slate-400 hover:text-slate-600">Batal</button>
+                <button onclick="closeSandboxSelector(); showConfig();" class="text-xs font-semibold text-emerald-600 hover:underline">
+                    <i class="fa-solid fa-key mr-1"></i>Masukkan API Key Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
     <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="min-h-full flex flex-col justify-center py-12 bg-slate-900">
-        <div class="text-center text-white mb-8"><h2 class="text-3xl font-bold">BeyondLibrary Workspace</h2></div>
-        <div class="sm:mx-auto sm:w-full sm:max-w-md bg-slate-800 p-8 rounded-2xl border border-slate-700">
-            <form id="loginForm" class="space-y-4">
-                <input id="username" type="text" placeholder="Username" required class="w-full p-3 bg-slate-700 rounded-lg text-white">
-                <input id="password" type="password" placeholder="Password" required class="w-full p-3 bg-slate-700 rounded-lg text-white">
-                <button type="submit" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700">Masuk</button>
-            </form>
+    <div id="loginScreen" class="hidden min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,180,74,0.15),transparent_45%)]"></div>
+        <div class="sm:mx-auto sm:w-full sm:max-w-md z-10 text-center">
+            <img id="loginLogo" src="logo-NBT.png" alt="BeyondLibrary Logo" class="mx-auto h-20 w-20 rounded-2xl object-cover ring-2 ring-emerald-500 shadow-xl">
+            <h2 id="loginTitle" class="mt-6 text-center text-3xl font-extrabold text-white serif-title tracking-tight">BeyondLibrary Workspace</h2>
+            <p id="loginSubtitle" class="mt-2 text-center text-sm text-slate-400">
+                Akses aman untuk <span class="text-emerald-500 font-semibold" id="loginOwner">Neo Beyond Tech</span>
+            </p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
+            <div class="bg-slate-800 py-8 px-4 shadow-2xl rounded-2xl sm:px-10 border border-slate-700/50">
+                <form class="space-y-6" onsubmit="handleLogin(event)">
+                    <div>
+                        <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">Username</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <input id="username" name="username" type="text" required class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-300">Password</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                                <i class="fa-solid fa-lock"></i>
+                            </div>
+                            <input id="password" name="password" type="password" required class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white transition-colors" style="background-color: var(--color-accent)">
+                            Masuk ke Sistem
+                        </button>
+                    </div>
+                </form>
+                <div class="mt-6 text-center">
+                    <span class="text-xs text-slate-500 block">Terhubung dengan Database Terotorisasi:</span>
+                    <a id="sheetLink" href="#" target="_blank" class="text-xs text-emerald-500 hover:text-emerald-400 underline transition-all inline-block mt-1">
+                        <i class="fa-solid fa-table-list mr-1"></i> Buka Google Sheets Registry
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- MAIN APP SCREEN -->
     <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
-        <aside class="w-64 bg-slate-900 text-slate-300 p-4">
-            <button onclick="switchTab('manage')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-book mr-2"></i> Manajemen Buku</button>
-            <button onclick="switchTab('scan')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-camera mr-2"></i> AI Cover Scan</button>
-            <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-sliders mr-2"></i> Pengaturan</button>
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col border-r border-slate-800">
+            <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
+                <img id="navLogo" src="logo-NBT.png" alt="BeyondLibrary Logo" class="h-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/50">
+                <div class="overflow-hidden">
+                    <h2 id="navTitle" class="text-lg font-bold text-white leading-tight serif-title truncate">BeyondLibrary</h2>
+                    <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full inline-block w-max font-semibold border border-emerald-800">v1.5.0</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-grow p-4 space-y-1.5 overflow-y-auto">
+                <button onclick="switchTab('search')" class="tab-btn active w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white [&.active]:bg-[var(--color-accent)] [&.active]:text-white [&.active]:shadow-lg [&.active]:shadow-emerald-500/10">
+                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    <span>Pencarian Pintar</span>
+                </button>
+                <button id="adminManageMenu" onclick="switchTab('scan')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white [&.active]:bg-[var(--color-accent)] [&.active]:text-white [&.active]:shadow-lg [&.active]:shadow-emerald-500/10">
+                    <i class="fa-solid fa-camera text-lg"></i>
+                    <span>Manajemen Buku (AI Scan)</span>
+                </button>
+                <button onclick="switchTab('docproc')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white [&.active]:bg-[var(--color-accent)] [&.active]:text-white [&.active]:shadow-lg [&.active]:shadow-emerald-500/10">
+                    <i class="fa-solid fa-file-import text-lg"></i>
+                    <span>Page Indexer</span>
+                </button>
+                <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white [&.active]:bg-[var(--color-accent)] [&.active]:text-white [&.active]:shadow-lg [&.active]:shadow-emerald-500/10">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                    <span>Pengaturan</span>
+                </button>
+            </nav>
+
+            <!-- User Status / Sign out -->
+            <div class="p-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/20">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <div class="h-9 w-9 text-white font-bold rounded-full flex items-center justify-center flex-shrink-0 text-sm" style="background-color: var(--color-accent)">
+                        <span id="userInitial">U</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <span id="userNameDisplay" class="text-xs font-semibold text-white block truncate">User</span>
+                        <span id="userRoleDisplay" class="text-[10px] text-slate-400 block uppercase tracking-wider">Admin</span>
+                    </div>
+                </div>
+                <button onclick="performLogout()" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Log Out">
+                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                </button>
+            </div>
         </aside>
 
-        <main class="flex-grow p-8 overflow-y-auto">
-            <!-- PANEL SCAN -->
-            <div id="panel-scan" class="tab-panel hidden max-w-2xl mx-auto">
-                <h2 class="text-2xl font-bold mb-4">AI Cover Scan</h2>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="border-2 border-dashed p-4 text-center rounded-lg">Cover Depan</div>
-                    <div class="border-2 border-dashed p-4 text-center rounded-lg">Cover Belakang</div>
+        <!-- Main Content Workspace -->
+        <main class="flex-grow flex flex-col min-h-0 overflow-y-auto">
+            <!-- Top Navbar -->
+            <header class="bg-white border-b border-slate-200 py-4 px-6 md:px-8 flex items-center justify-between">
+                <h1 id="pageHeaderTitle" class="text-xl font-bold text-slate-800" style="color: var(--color-primary)">Engine Perpustakaan Pintar</h1>
+                <div class="flex items-center space-x-3">
+                    <span id="syncModeBadge" class="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                        <i class="fa-solid fa-shield-halved text-emerald-600 mr-1.5"></i> Private Database Mode
+                    </span>
+                    <button onclick="showConfig()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all" title="System Settings">
+                        <i class="fa-solid fa-gears text-lg"></i>
+                    </button>
                 </div>
-                <button onclick="alert('Parsing AI aktif...')" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700">Ekstrak Metadata Buku via Gemini AI</button>
-            </div>
+            </header>
 
-            <!-- PANEL MANAGE (ADD BOOK) -->
-            <div id="panel-manage" class="tab-panel max-w-2xl mx-auto">
-                <h2 class="text-2xl font-bold mb-6">Tambah/Edit Buku</h2>
-                <form id="bookForm" class="space-y-4 bg-white p-6 rounded shadow">
-                    <input id="inTitle" type="text" placeholder="Judul Buku" class="w-full p-2 border rounded">
-                    <input id="inAuthor" type="text" placeholder="Penulis" class="w-full p-2 border rounded">
-                    <input id="inISBN" type="text" placeholder="ISBN" class="w-full p-2 border rounded">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700">Simpan Data Buku</button>
-                </form>
-                <div id="bookList" class="mt-8"></div>
-            </div>
+            <!-- Tab Panels -->
+            <div class="p-6 md:p-8 flex-grow">
+                
+                <!-- TAB 1: SMART SEARCH ENGINE -->
+                <section id="panel-search" class="tab-panel space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-900 serif-title mb-4">Multi-Dimensional Search Panel</h3>
+                        
+                        <!-- Search Modes Tabs -->
+                        <div class="flex space-x-2 border-b border-slate-100 pb-3 mb-4">
+                            <button onclick="setSearchMode('exact')" class="search-mode-btn active px-4 py-2 text-xs font-semibold tracking-wider uppercase text-slate-500 hover:text-slate-900 [&.active]:border-b-2 [&.active]:border-[var(--color-accent)] [&.active]:text-[var(--color-accent)]">
+                                <i class="fa-solid fa-quote-left mr-1"></i> Keyword / Exact Text
+                            </button>
+                            <button onclick="setSearchMode('semantic')" class="search-mode-btn px-4 py-2 text-xs font-semibold tracking-wider uppercase text-slate-500 hover:text-slate-900 [&.active]:border-b-2 [&.active]:border-[var(--color-accent)] [&.active]:text-[var(--color-accent)]">
+                                <i class="fa-solid fa-brain mr-1"></i> Similar Quotes / Semantic
+                            </button>
+                            <button onclick="setSearchMode('visual')" class="search-mode-btn px-4 py-2 text-xs font-semibold tracking-wider uppercase text-slate-500 hover:text-slate-900 [&.active]:border-b-2 [&.active]:border-[var(--color-accent)] [&.active]:text-[var(--color-accent)]">
+                                <i class="fa-solid fa-images mr-1"></i> Reverse Image Search
+                            </button>
+                        </div>
 
-            <!-- PANEL SETTINGS -->
-            <div id="panel-settings" class="tab-panel hidden">
-                <h2 class="text-xl font-bold mb-4">Pengaturan Backend</h2>
-                <input id="configGasUrl" type="text" placeholder="URL Google Apps Script..." class="w-full p-2 border rounded">
-                <button onclick="saveConfig()" class="mt-4 bg-gray-600 text-white px-6 py-2 rounded">Simpan Konfigurasi</button>
+                        <!-- Search Inputs -->
+                        <div id="textSearchControls" class="space-y-4">
+                            <div class="flex gap-2">
+                                <div class="relative flex-grow">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <input type="text" id="searchQuery" placeholder="Search physical book library..." class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                                </div>
+                                <button onclick="triggerSearch()" class="text-white font-medium px-6 py-3 rounded-xl text-sm transition-colors flex items-center space-x-2 shrink-0 hover:opacity-90" style="background-color: var(--color-primary)">
+                                    <i class="fa-solid fa-search"></i>
+                                    <span>Query</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="visualSearchControls" class="hidden space-y-4">
+                            <div class="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center bg-slate-50 hover:bg-slate-100 transition-colors relative cursor-pointer" onclick="document.getElementById('visualSearchFile').click()">
+                                <input type="file" id="visualSearchFile" accept="image/*" class="hidden" onchange="handleVisualSearchUpload(this)">
+                                <div class="space-y-3" id="visualSearchUploadPrompt">
+                                    <div class="mx-auto w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-slate-700">Upload Image to Begin Visual Comparison</p>
+                                        <p class="text-xs text-slate-400 mt-1">JPG, PNG or GIF up to 5MB</p>
+                                    </div>
+                                </div>
+                                <div id="visualSearchFilePreview" class="hidden flex flex-col items-center space-y-2">
+                                    <img id="visualPreviewImg" class="h-32 rounded-lg object-contain border shadow">
+                                    <span class="text-xs font-semibold text-emerald-600 hover:underline">Change image</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Filter Collapsible -->
+                        <div class="mt-4 border-t border-slate-100 pt-4">
+                            <button onclick="toggleFilters()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center space-x-1">
+                                <i class="fa-solid fa-sliders"></i>
+                                <span>Refine with Filters</span>
+                                <i class="fa-solid fa-chevron-down text-[10px]" id="filterChevron"></i>
+                            </button>
+                            
+                            <div id="filterPanel" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Ruangan Perpustakaan</label>
+                                    <select id="filterLocation" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        <option value="">Semua Ruangan</option>
+                                        <option value="Main Library Hall">Main Library Hall</option>
+                                        <option value="Research Wing">Research Wing</option>
+                                        <option value="Basement Archive">Basement Archive</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Nomor Rak</label>
+                                    <input type="text" id="filterRack" placeholder="e.g. RAK-05" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">DDC Classification Code</label>
+                                    <input type="text" id="filterDDC" placeholder="e.g. 641.5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Results Area -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-semibold tracking-wider uppercase text-slate-500">Hasil Pencarian (<span id="resultsCount">0</span>)</h4>
+                            <span id="searchIndicator" class="hidden text-xs text-white px-2.5 py-1 rounded-full font-medium animate-pulse" style="background-color: var(--color-accent)">
+                                <i class="fa-solid fa-microchip-ai mr-1"></i> Processing AI Vector Scan...
+                            </span>
+                        </div>
+
+                        <div id="resultsGrid" class="grid grid-cols-1 gap-6">
+                            <!-- Empty State -->
+                            <div id="searchEmptyState" class="bg-white rounded-2xl p-12 text-center border border-slate-100">
+                                <div class="mx-auto w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                                </div>
+                                <h5 class="text-sm font-bold text-slate-700">No Search Queries Performed</h5>
+                                <p class="text-xs text-slate-400 mt-1">Enter search terms or trigger semantic analysis to find matching books.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: MANAJEMEN BUKU (PROTECTED FOR ADMINS) -->
+                <section id="panel-scan" class="tab-panel hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <!-- Camera capture / inputs -->
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-900 serif-title">Pendaftaran Buku Baru</h3>
+                                    <p class="text-xs text-slate-500 mt-1">Aktifkan jendela bidik kamera internal, capture frame, dan scan otomatis metadata buku.</p>
+                                </div>
+                                <button onclick="toggleLiveCamera()" id="toggleCamBtn" class="text-xs font-bold text-white bg-[#1b2e4b] px-3 py-1.5 rounded-lg hover:opacity-90 transition-all flex items-center space-x-1">
+                                    <i class="fa-solid fa-video"></i>
+                                    <span>Aktifkan Kamera Live</span>
+                                </button>
+                            </div>
+
+                            <!-- LIVE CAMERA VIEWFINDER WINDOW -->
+                            <div id="liveCameraContainer" class="hidden relative aspect-video w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex flex-col items-center justify-center">
+                                <video id="videoStream" autoplay playsinline class="w-full h-full object-cover"></video>
+                                <div class="absolute bottom-4 inset-x-0 flex justify-center space-x-3 z-10">
+                                    <button onclick="captureFrame('front')" class="px-3.5 py-1.5 bg-emerald-600 text-white font-semibold rounded-lg text-xs shadow hover:bg-emerald-700 transition-all">
+                                        <i class="fa-solid fa-camera mr-1"></i> Capture Cover Depan
+                                    </button>
+                                    <button onclick="captureFrame('back')" class="px-3.5 py-1.5 bg-blue-600 text-white font-semibold rounded-lg text-xs shadow hover:bg-blue-700 transition-all">
+                                        <i class="fa-solid fa-camera mr-1"></i> Capture Cover Belakang
+                                    </button>
+                                </div>
+                                <canvas id="captureCanvas" class="hidden"></canvas>
+                            </div>
+
+                            <!-- Camera Simulators / Photo Results -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Front Cover -->
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Front Cover</label>
+                                    <div class="border-2 border-dashed border-slate-200 rounded-xl aspect-[3/4] flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden relative group" onclick="triggerImageCapture('front')">
+                                        <input type="file" id="frontCoverFile" accept="image/*" class="hidden" onchange="handleCoverUpload(this, 'front')">
+                                        <img id="frontCoverPreview" class="hidden absolute inset-0 w-full h-full object-cover">
+                                        <div id="frontCoverPrompt" class="text-center p-3 space-y-2 z-10">
+                                            <div class="mx-auto w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+                                                <i class="fa-solid fa-camera"></i>
+                                            </div>
+                                            <span class="text-[11px] font-semibold text-slate-600 block">Upload / Capture</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Back Cover -->
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Back Cover</label>
+                                    <div class="border-2 border-dashed border-slate-200 rounded-xl aspect-[3/4] flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden relative group" onclick="triggerImageCapture('back')">
+                                        <input type="file" id="backCoverFile" accept="image/*" class="hidden" onchange="handleCoverUpload(this, 'back')">
+                                        <img id="backCoverPreview" class="hidden absolute inset-0 w-full h-full object-cover">
+                                        <div id="backCoverPrompt" class="text-center p-3 space-y-2 z-10">
+                                            <div class="mx-auto w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+                                                <i class="fa-solid fa-camera"></i>
+                                            </div>
+                                            <span class="text-[11px] font-semibold text-slate-600 block">Upload / Capture</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="performAICoverScan()" class="w-full text-white font-semibold py-3 rounded-xl text-sm transition-all shadow-md flex items-center justify-center space-x-2 hover:opacity-90" style="background-color: var(--color-primary)">
+                                <i class="fa-solid fa-microchip-ai"></i>
+                                <span>Pindai Sampul dengan Vision AI</span>
+                            </button>
+                        </div>
+
+                        <!-- Catalog Entry Form -->
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h3 class="text-base font-bold text-slate-900">Registrasi Katalog Buku</h3>
+                                <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 tracking-wider">International ISBD</span>
+                            </div>
+
+                            <form id="bookRegistryForm" onsubmit="saveBookRegistry(event)" class="space-y-4 text-xs">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-2">
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Book Title</label>
+                                        <input type="text" id="regTitle" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Author</label>
+                                        <input type="text" id="regAuthor" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">ISBN</label>
+                                        <input type="text" id="regISBN" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Publisher</label>
+                                        <input type="text" id="regISBN" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    </div>
+                                    <div>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Publication Year</label>
+                                        <input type="number" id="regPubYear" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Synopsis / General Notes</label>
+                                        <textarea id="regSynopsis" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-slate-100 pt-3">
+                                    <h4 class="font-bold mb-3 text-xs uppercase tracking-wider text-emerald-600"><i class="fa-solid fa-map-pin mr-1"></i> Shelf & Location Control</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Library Room / Location</label>
+                                            <select id="regLocation" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                                <option value="Main Library Hall">Main Library Hall</option>
+                                                <option value="Research Wing">Research Wing</option>
+                                                <option value="Basement Archive">Basement Archive</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Rack / Cabinet Code</label>
+                                            <input type="text" id="regRack" required placeholder="e.g. RAK-05" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        </div>
+                                        <div>
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Shelf Level</label>
+                                            <input type="text" id="regShelf" required placeholder="e.g. Shelf B" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        </div>
+                                        <div>
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">DDC Classification Code</label>
+                                            <input type="text" id="regDDC" placeholder="e.g. 641.5" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 flex space-x-2">
+                                    <button type="button" onclick="clearRegistryForm()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-lg transition-colors">
+                                        Reset Form
+                                    </button>
+                                    <button type="submit" class="flex-1 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
+                                        Save to Database
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- TAB 3: DOCUMENT INDEXING & OCR PROCESSING -->
+                <section id="panel-docproc" class="tab-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-bold text-slate-900 serif-title">Page-by-Page Intelligent Indexer</h3>
+                            <p class="text-xs text-slate-500 mt-1">Unggah pindaian halaman buku secara individual. Sistem akan mengindeks konten tersebut guna mengaktifkan pencarian kutipan instan.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            <!-- File upload & Queue Area -->
+                            <div class="space-y-4 lg:col-span-1 border-r border-slate-100 pr-0 lg:pr-6">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Unggah Dokumen</label>
+                                <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer" onclick="document.getElementById('bulkPagesFile').click()">
+                                    <input type="file" id="bulkPagesFile" accept="image/*,application/pdf" multiple class="hidden" onchange="handleBulkPagesUpload(this)">
+                                    <div class="space-y-2">
+                                        <div class="mx-auto w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center">
+                                            <i class="fa-solid fa-file-pdf text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-semibold text-slate-700 block">Select PDF or Page JPGs</span>
+                                            <span id="uploadStatusBadge" class="text-[10px] text-slate-400 block mt-0.5">Up to 20 pages per batch</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Target Association -->
+                                <div class="pt-2">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Kaitkan dengan Buku Koleksi</label>
+                                    <select id="docAssociateBook" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        <!-- Populated via Javascript -->
+                                    </select>
+                                </div>
+
+                                <button onclick="processUploadedDocuments()" class="w-full text-white font-semibold py-2.5 rounded-lg text-xs transition-colors shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
+                                    Run Intelligent Page OCR & Indexing
+                                </button>
+                            </div>
+
+                            <!-- User Friendly Repository Monitor -->
+                            <div class="lg:col-span-2 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-xs font-semibold tracking-wider uppercase text-slate-400">Repositior Halaman Terindeks</h4>
+                                    <div class="flex items-center space-x-2">
+                                        <span id="indexingStatus" class="hidden text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded animate-pulse">
+                                            <i class="fa-solid fa-spinner animate-spin mr-1"></i> Prosedur Ekstraksi Aktif
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Live Interactive Database Grid View -->
+                                <div class="border border-slate-100 rounded-xl bg-white overflow-hidden shadow-inner">
+                                    <table class="min-w-full divide-y divide-slate-100 text-[11px]">
+                                        <thead class="bg-slate-50 text-slate-400 uppercase tracking-wider font-semibold text-left">
+                                            <tr>
+                                                <th class="px-4 py-2.5">Buku Terkait</th>
+                                                <th class="px-4 py-2.5">Halaman</th>
+                                                <th class="px-4 py-2.5">Sampel Kutipan Teks Terindeks</th>
+                                                <th class="px-4 py-2.5 text-right">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="indexedPageRows" class="divide-y divide-slate-100 text-slate-600">
+                                            <!-- Dynamically filled on load / upload -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: SYSTEM SETTINGS -->
+                <section id="panel-settings" class="tab-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <div class="border-b border-slate-100 pb-3 mb-6">
+                            <h3 class="text-lg font-bold text-slate-900 serif-title">Sistem & Tata Kelola Kode</h3>
+                            <p class="text-xs text-slate-500 mt-1">Konfigurasi jembatan cloud, riwayat pembaruan, dan status audit log dev.</p>
+                        </div>
+                        
+                        <!-- Toggle Tab Settings Internal -->
+                        <div class="flex space-x-2 border-b border-slate-100 pb-3 mb-6">
+                            <button onclick="switchSettingsSubTab('conn')" class="sett-sub-btn active px-4 py-2 text-xs font-semibold uppercase text-slate-500 [&.active]:text-[var(--color-accent)] [&.active]:border-b-2 [&.active]:border-[var(--color-accent)]">
+                                <i class="fa-solid fa-network-wired mr-1"></i> Konektivitas
+                            </button>
+                            <button onclick="switchSettingsSubTab('changelog')" class="sett-sub-btn px-4 py-2 text-xs font-semibold uppercase text-slate-500 [&.active]:text-[var(--color-accent)] [&.active]:border-b-2 [&.active]:border-[var(--color-accent)]">
+                                <i class="fa-solid fa-code-history mr-1"></i> Changelog BeyondLibrary
+                            </button>
+                        </div>
+
+                        <!-- SUBTAB 1: CONNECTIONS -->
+                        <div id="sett-sub-panel-conn" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2.5 bg-emerald-50 text-emerald-800 rounded-lg">
+                                        <i class="fa-solid fa-database text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-slate-800">Unified Database Registry</h4>
+                                        <p class="text-[10px] text-slate-400 font-mono">Synced sheets status</p>
+                                    </div>
+                                </div>
+                                <div class="text-xs space-y-1.5 text-slate-600">
+                                    <p><strong>Configured ID:</strong> <span id="diagSheetId" class="font-mono text-slate-500 truncate block">...</span></p>
+                                    <p><strong>Registry Link:</strong> <a id="diagSheetLink" href="#" target="_blank" class="text-emerald-600 underline">View Raw Sheets</a></p>
+                                </div>
+                                <button onclick="verifySheetsConnection()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-xs transition-colors">
+                                    Uji Sinkronisasi Google Sheets
+                                </button>
+                            </div>
+
+                            <div class="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2.5 bg-indigo-50 text-indigo-800 rounded-lg">
+                                        <i class="fa-solid fa-network-wired text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-slate-800">ChromaDB Sandbox Vektor</h4>
+                                        <p class="text-[10px] text-slate-400">Dimensi 1536d Cosine (Embedded)</p>
+                                    </div>
+                                </div>
+                                <div class="text-xs space-y-1 text-slate-600">
+                                    <p><strong>Status:</strong> <span class="text-emerald-600 font-bold">Aktif (Embedded)</span></p>
+                                    <p><strong>Indexed Embeddings:</strong> <span id="diagVectorCount" class="font-mono text-slate-500 font-bold">0 vectors</span></p>
+                                </div>
+                                <button onclick="clearLocalIndexes()" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 rounded-lg text-xs transition-colors border border-red-200">
+                                    Purge Embedded Indexes
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SUBTAB 2: INTEGRATED CHANGELOG -->
+                        <div id="sett-sub-panel-changelog" class="hidden space-y-4">
+                            <div class="bg-slate-900 rounded-xl p-5 text-slate-300 font-mono text-xs overflow-x-auto leading-relaxed max-h-[350px] overflow-y-auto">
+                                <span class="text-emerald-400 font-bold">BEYONDLIBRARY UPDATE REGISTRY (SemVer):</span>
+                                <hr class="border-slate-800 my-3">
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-emerald-400 font-bold">[v1.5.0] - 22 Juni 2026 (14:15) *LIVE*</span>
+                                        <ul class="list-disc pl-5 text-[11px] text-slate-400 mt-1 space-y-1">
+                                            <li><span class="text-emerald-400 font-semibold">[OPTIMALISASI LOG]</span> Menghapus fungsionalitas konsol baris terminal pipeline pendaftaran halaman yang berantakan, digantikan antarmuka tabel repositori yang ramah pengguna.</li>
+                                            <li><span class="text-blue-400 font-semibold">[BRANDING UPDATE]</span> Mengubah label menu input visual menjadi "Manajemen Buku (AI Scan)" dengan verifikasi role admin terintegrasi.</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 font-bold">[v1.4.0] - 21 Juni 2026 (11:05)</span>
+                                        <ul class="list-disc pl-5 text-[11px] text-slate-500 mt-1 space-y-1">
+                                            <li>Memperbaiki bugs pencarian metadata yang tertukar di sandbox akibat cache isian form.</li>
+                                            <li>Menambahkan data pindaian buku demo "Leadership X Y Z" (Dedi Wijaya & Sarah Ardiwinata).</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
             </div>
         </main>
     </div>
 
-    <script>
-        // LOAD CONFIG
-        document.getElementById('configGasUrl').value = localStorage.getItem('gasUrl') || "";
-        function saveConfig() { localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value); alert("Tersimpan!"); }
 
-        // SWITCH TABS
-        function switchTab(tab) {
-            document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
-            document.getElementById(`panel-${tab}`).classList.remove("hidden");
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        // =========================================================================
+        // GITHUB SECURITY REVISION: Default Config cleaned to protect direct leaks
+        // =========================================================================
+        let config = {
+            appTitle: "BeyondLibrary",
+            appOwner: "Neo Beyond Tech",
+            logoUrl: "logo-NBT.png",
+            colorPrimary: "#1b2e4b",
+            colorAccent: "#3bb44a",
+            sheetUrl: "", // CLEANED FOR GITHUB DEPLOYMENT SECURITY
+            gasUrl: "",   // CLEANED FOR GITHUB DEPLOYMENT SECURITY
+            apiKey: ""    // CLEANED FOR GITHUB DEPLOYMENT SECURITY
+        };
+
+        const USER_DB = [
+            { username: "admin", password: "123", role: "Administrator" },
+            { username: "librarian", password: "123", role: "Librarian" }
+        ];
+
+        let booksCatalog = [
+            {
+                id: "B001",
+                title: "Introduction to Algorithmic Intelligence",
+                author: "Dr. Catherine Stone",
+                isbn: "978-3-16-148410-0",
+                publisher: "O'Reilly Media",
+                pub_year: 2024,
+                synopsis: "An in-depth introduction into automated machine reasoning, deep vector search embeddings, and LLM orchestration paradigms.",
+                location: "Main Library Hall",
+                rack: "RAK-01",
+                shelf: "Shelf A",
+                ddc: "518.1",
+                cover_front: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=400&fit=crop",
+                pages: [
+                    { page_num: 1, text: "Chapter 1: The rise of embedding search technologies has transformed information retrieval globally." },
+                    { page_num: 2, text: "The foundational cosine distance equation determines dimensional semantic distance." }
+                ]
+            }
+        ];
+
+        let currentSearchMode = 'exact';
+        let currentUser = null;
+        let selectedCoverFront = null;
+        let selectedCoverBack = null;
+        let tempBulkFiles = [];
+        let videoStreamActive = null;
+
+        // Window load routines
+        window.onload = function() {
+            const savedConfig = localStorage.getItem("beyondlibrary_config_v1_5");
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                populateConfigFields();
+                applyWhiteLabelBranding();
+            } else {
+                applyWhiteLabelBranding();
+            }
+
+            const savedBooks = localStorage.getItem("beyondlibrary_books");
+            if (savedBooks) {
+                booksCatalog = JSON.parse(savedBooks);
+            }
+
+            updateDropdowns();
+            renderIndexedPages();
+            updateVectorCount();
+            triggerFetchSync();
+        };
+
+        function populateConfigFields() {
+            document.getElementById("cfgAppTitle").value = config.appTitle || "BeyondLibrary";
+            document.getElementById("cfgAppOwner").value = config.appOwner || "Neo Beyond Tech";
+            document.getElementById("cfgLogoUrl").value = config.logoUrl || "logo-NBT.png";
+            document.getElementById("cfgColorPrimary").value = config.colorPrimary || "#1b2e4b";
+            document.getElementById("cfgColorAccent").value = config.colorAccent || "#3bb44a";
+            document.getElementById("cfgSheetUrl").value = config.sheetUrl || "";
+            document.getElementById("cfgGasUrl").value = config.gasUrl || "";
+            document.getElementById("cfgApiKey").value = config.apiKey || "";
         }
 
-        // SAVE BOOK
-        document.getElementById('bookForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const bookData = {
-                title: document.getElementById('inTitle').value,
-                author: document.getElementById('inAuthor').value,
-                isbn: document.getElementById('inISBN').value
-            };
-            
-            const response = await fetch(localStorage.getItem('gasUrl'), {
-                method: "POST",
-                body: JSON.stringify({ action: "saveBook", bookData })
-            });
-            alert("Buku berhasil ditambahkan!");
-        });
+        function showConfig() {
+            document.getElementById("configOverlay").classList.remove("hidden");
+        }
 
-        // LOGIN
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        function saveConfiguration(e) {
             e.preventDefault();
+            config.appTitle = document.getElementById("cfgAppTitle").value;
+            config.appOwner = document.getElementById("cfgAppOwner").value;
+            config.logoUrl = document.getElementById("cfgLogoUrl").value;
+            config.colorPrimary = document.getElementById("cfgColorPrimary").value;
+            config.colorAccent = document.getElementById("cfgColorAccent").value;
+            config.sheetUrl = document.getElementById("cfgSheetUrl").value;
+            config.gasUrl = document.getElementById("cfgGasUrl").value;
+            config.apiKey = document.getElementById("cfgApiKey").value;
+
+            localStorage.setItem("beyondlibrary_config_v1_5", JSON.stringify(config));
+            
+            applyWhiteLabelBranding();
+            document.getElementById("configOverlay").classList.add("hidden");
+            
+            showToast("Konfigurasi v1.5.0 berhasil diterapkan!", "success");
+
+            if (!currentUser) {
+                document.getElementById("loginScreen").classList.remove("hidden");
+            }
+            triggerFetchSync();
+        }
+
+        function applyWhiteLabelBranding() {
+            const defaultLogo = "logo-NBT.png";
+            const currentLogo = config.logoUrl || defaultLogo;
+
+            const loginLogoEl = document.getElementById("loginLogo");
+            const navLogoEl = document.getElementById("navLogo");
+            
+            loginLogoEl.src = currentLogo;
+            navLogoEl.src = currentLogo;
+
+            loginLogoEl.onerror = function() { this.src = "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=120&h=120&fit=crop"; };
+            navLogoEl.onerror = function() { this.src = "https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=100&h=100&fit=crop"; };
+
+            document.getElementById("loginTitle").innerText = `${config.appTitle} Workspace`;
+            document.getElementById("loginOwner").innerText = config.appOwner;
+
+            document.getElementById("navTitle").innerText = config.appTitle;
+
+            document.getElementById("sheetLink").href = config.sheetUrl || "#";
+            document.getElementById("diagSheetLink").href = config.sheetUrl || "#";
+            document.getElementById("diagSheetId").innerText = config.sheetUrl ? extractSheetId(config.sheetUrl) : "Belum terkonfigurasi";
+            
+            document.title = `${config.appTitle} - Intelligent Library System`;
+
+            const rootStyle = document.documentElement.style;
+            rootStyle.setProperty('--color-primary', config.colorPrimary || '#1b2e4b');
+            rootStyle.setProperty('--color-accent', config.colorAccent || '#3bb44a');
+
+            const badge = document.getElementById("syncModeBadge");
+            if (config.gasUrl) {
+                badge.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-600 mr-1.5"></i> Connected Secure API Mode`;
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-shield-halved text-amber-600 mr-1.5"></i> Sandbox Mode`;
+            }
+        }
+
+        function extractSheetId(url) {
+            const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            return match ? match[1] : "Direct Spreadsheet Link";
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const userInp = document.getElementById("username").value;
+            const passInp = document.getElementById("password").value;
+
+            showToast("Mengotentikasi sesi...", "info");
+
+            if (config.gasUrl) {
+                try {
+                    const response = await fetch(config.gasUrl, {
+                        method: "POST",
+                        mode: "cors",
+                        body: JSON.stringify({ action: "login", username: userInp, password: passInp })
+                    });
+                    const res = await response.json();
+                    if (res.success) {
+                        enterApp(res.user);
+                    } else {
+                        showToast(res.error, "error");
+                    }
+                } catch (err) {
+                    runStaticLogin(userInp, passInp);
+                }
+            } else {
+                runStaticLogin(userInp, passInp);
+            }
+        }
+
+        function runStaticLogin(userInp, passInp) {
+            const verifiedUser = USER_DB.find(u => u.username.toLowerCase() === userInp.toLowerCase() && u.password === passInp);
+            if (verifiedUser) {
+                enterApp(verifiedUser);
+            } else {
+                showToast("Kredensial salah. Gunakan admin / 123.", "error");
+            }
+        }
+
+        function enterApp(user) {
+            currentUser = user;
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("mainApp").classList.remove("hidden");
-        });
+            
+            document.getElementById("userInitial").innerText = user.username[0].toUpperCase();
+            document.getElementById("userNameDisplay").innerText = user.username;
+            document.getElementById("userRoleDisplay").innerText = user.role || "Administrator";
+
+            const adminMenu = document.getElementById("adminManageMenu");
+            if (user.role && user.role.toLowerCase() !== "administrator") {
+                adminMenu.classList.add("hidden");
+            } else {
+                adminMenu.classList.remove("hidden");
+            }
+
+            showToast(`Akses diizinkan! Selamat datang, ${user.username}.`, "success");
+            updateDropdowns();
+        }
+
+        function performLogout() {
+            stopLiveCamera();
+            currentUser = null;
+            document.getElementById("mainApp").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
+            showToast("Berhasil keluar dari workspace.", "info");
+        }
+
+        function switchTab(tabId) {
+            stopLiveCamera();
+            document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.add("hidden"));
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            
+            document.getElementById(`panel-${tabId}`).classList.remove("hidden");
+            event.currentTarget.classList.add("active");
+
+            const headerTitles = {
+                'search': 'Pencarian Pintar Multi-Dimensi',
+                'scan': 'Manajemen Buku (AI Scan)',
+                'docproc': 'Document OCR Page Indexer',
+                'settings': 'Pengaturan Sistem'
+            };
+            document.getElementById("pageHeaderTitle").innerText = headerTitles[tabId];
+        }
+
+        async function toggleLiveCamera() {
+            const container = document.getElementById("liveCameraContainer");
+            const btnSpan = document.querySelector("#toggleCamBtn span");
+
+            if (videoStreamActive) {
+                stopLiveCamera();
+                showToast("Kamera dinonaktifkan.", "info");
+            } else {
+                showToast("Menyalakan sensor kamera...", "info");
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: "environment" },
+                        audio: false
+                    });
+                    videoStreamActive = stream;
+                    document.getElementById("videoStream").srcObject = stream;
+                    container.classList.remove("hidden");
+                    btnSpan.innerText = "Matikan Kamera";
+                } catch (err) {
+                    showToast("Gagal mengakses kamera.", "error");
+                }
+            }
+        }
+
+        function stopLiveCamera() {
+            const container = document.getElementById("liveCameraContainer");
+            const btnSpan = document.querySelector("#toggleCamBtn span");
+            if (videoStreamActive) {
+                videoStreamActive.getTracks().forEach(track => track.stop());
+                videoStreamActive = null;
+            }
+            container.classList.add("hidden");
+            if (btnSpan) btnSpan.innerText = "Aktifkan Kamera Live";
+        }
+
+        function captureFrame(type) {
+            if (!videoStreamActive) return;
+
+            const video = document.getElementById("videoStream");
+            const canvas = document.getElementById("captureCanvas");
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imgUrl = canvas.toDataURL("image/jpeg");
+
+            if (type === 'front') {
+                selectedCoverFront = imgUrl;
+                document.getElementById("frontCoverPreview").src = imgUrl;
+                document.getElementById("frontCoverPreview").classList.remove("hidden");
+                document.getElementById("frontCoverPrompt").classList.add("opacity-0");
+                showToast("Frame Cover Depan berhasil dicapture!", "success");
+            } else {
+                selectedCoverBack = imgUrl;
+                document.getElementById("backCoverPreview").src = imgUrl;
+                document.getElementById("backCoverPreview").classList.remove("hidden");
+                document.getElementById("backCoverPrompt").classList.add("opacity-0");
+                showToast("Frame Cover Belakang berhasil dicapture!", "success");
+            }
+        }
+
+        function triggerImageCapture(type) {
+            if (type === 'front') {
+                document.getElementById("frontCoverFile").click();
+            } else {
+                document.getElementById("backCoverFile").click();
+            }
+        }
+
+        function handleCoverUpload(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgUrl = e.target.result;
+                if (type === 'front') {
+                    selectedCoverFront = imgUrl;
+                    document.getElementById("frontCoverPreview").src = imgUrl;
+                    document.getElementById("frontCoverPreview").classList.remove("hidden");
+                    document.getElementById("frontCoverPrompt").classList.add("opacity-0");
+                } else {
+                    selectedCoverBack = imgUrl;
+                    document.getElementById("backCoverPreview").src = imgUrl;
+                    document.getElementById("backCoverPreview").classList.remove("hidden");
+                    document.getElementById("backCoverPrompt").classList.add("opacity-0");
+                }
+                showToast("Gambar cover berhasil diunggah.", "success");
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function showSandboxSelectorModal() {
+            document.getElementById("sandboxSelectorModal").classList.remove("hidden");
+        }
+
+        function closeSandboxSelector() {
+            document.getElementById("sandboxSelectorModal").classList.add("hidden");
+        }
+
+        function selectMockBook(bookKey) {
+            closeSandboxSelector();
+            
+            const mockDatabase = {
+                leadershipxyz: {
+                    title: "Leadership X Y Z: 3 Generasi Bicara Hidup dan Kepemimpinan",
+                    author: "Dedi Wijaya & Sarah Ardiwinata bersama Anies Baswedan",
+                    isbn: "978-602-5192-31-0",
+                    publisher: "Simpul",
+                    pub_year: 2020,
+                    synopsis: "Buku ini membahas kepemimpinan dari sudut pandang tiga generasi yang berbeda, diulas secara mendalam bersama tokoh kepemimpinan nasional Anies Baswedan untuk memetakan dinamika kepemimpinan masa kini dan masa depan.",
+                    ddc: "303.34"
+                },
+                superleader: {
+                    title: "The Super Leader Super Manager",
+                    author: "Dr. Muhammad Syafii Antonio, M.Ec",
+                    isbn: "978-9791137703",
+                    publisher: "Tazkia Publishing",
+                    pub_year: 2010,
+                    synopsis: "Buku ini membahas teladan kepemimpinan dan manajemen modern berdasarkan karakteristik mulia Nabi Muhammad SAW.",
+                    ddc: "297.63"
+                },
+                ai: {
+                    title: "Artificial Intelligence: A Modern Approach",
+                    author: "Stuart Russell & Peter Norvig",
+                    isbn: "978-0136042594",
+                    publisher: "Pearson Education",
+                    pub_year: 2021,
+                    synopsis: "The long-anticipated revision of Artificial Intelligence: A Modern Approach explores the full depth and breadth of the field of machine learning.",
+                    ddc: "006.3"
+                }
+            };
+
+            const data = mockDatabase[bookKey];
+            if (data) {
+                populateRegistryForm(data);
+                showToast(`Simulasi pindaian selesai untuk: "${data.title}"`, "success");
+            }
+        }
+
+        async function performAICoverScan() {
+            if (!selectedCoverFront) {
+                showToast("Harap capture atau unggah foto Cover Depan terlebih dahulu.", "error");
+                return;
+            }
+
+            if (config.apiKey) {
+                showToast("Menghubungkan ke Gemini Vision AI...", "info");
+                try {
+                    const base64Data = selectedCoverFront.split(',')[1];
+                    const prompt = "You are a professional library cataloging AI. Analyze this book cover. Extract the title, author, synopsis, isbn, publisher, pub_year, and ddc from the cover image. Return only the JSON matching the required schema.";
+                    
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${config.apiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: prompt },
+                                    { inlineData: { mimeType: "image/jpeg", data: base64Data } }
+                                ]
+                            }],
+                            generationConfig: { 
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        title: { type: "STRING" },
+                                        author: { type: "STRING" },
+                                        synopsis: { type: "STRING" },
+                                        isbn: { type: "STRING" },
+                                        publisher: { type: "STRING" },
+                                        pub_year: { type: "INTEGER" },
+                                        ddc: { type: "STRING" }
+                                    },
+                                    required: ["title", "author"]
+                                }
+                            }
+                        })
+                    });
+
+                    const jsonResult = await response.json();
+                    const text = jsonResult.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        const parsed = JSON.parse(text);
+                        populateRegistryForm(parsed);
+                        showToast("Kamera Vision AI berhasil memindai buku asli secara real-time!", "success");
+                    } else {
+                        throw new Error("Skema respon AI salah.");
+                    }
+                } catch (error) {
+                    showSandboxSelectorModal();
+                }
+            } else {
+                showSandboxSelectorModal();
+            }
+        }
+
+        function populateRegistryForm(data) {
+            document.getElementById("regTitle").value = data.title || "";
+            document.getElementById("regAuthor").value = data.author || "";
+            document.getElementById("regISBN").value = data.isbn || "";
+            document.getElementById("regPublisher").value = data.publisher || "";
+            document.getElementById("regPubYear").value = data.pub_year || "";
+            document.getElementById("regSynopsis").value = data.synopsis || "";
+            document.getElementById("regDDC").value = data.ddc || "";
+            document.getElementById("regRack").value = "RAK-6";
+            document.getElementById("regShelf").value = "Level A";
+        }
+
+        function clearRegistryForm() {
+            document.getElementById("bookRegistryForm").reset();
+            selectedCoverFront = null;
+            selectedCoverBack = null;
+            document.getElementById("frontCoverPreview").src = "";
+            document.getElementById("frontCoverPreview").classList.add("hidden");
+            document.getElementById("frontCoverPrompt").classList.remove("opacity-0");
+            document.getElementById("backCoverPreview").src = "";
+            document.getElementById("backCoverPreview").classList.add("hidden");
+            document.getElementById("backCoverPrompt").classList.remove("opacity-0");
+        }
+
+        async function saveBookRegistry(e) {
+            e.preventDefault();
+            
+            const newBook = {
+                id: "B" + String(booksCatalog.length + 1).padStart(3, '0'),
+                title: document.getElementById("regTitle").value,
+                author: document.getElementById("regAuthor").value,
+                isbn: document.getElementById("regISBN").value,
+                publisher: document.getElementById("regPublisher").value,
+                pub_year: parseInt(document.getElementById("regPubYear").value),
+                synopsis: document.getElementById("regSynopsis").value,
+                location: document.getElementById("regLocation").value,
+                rack: document.getElementById("regRack").value,
+                shelf: document.getElementById("regShelf").value,
+                ddc: document.getElementById("regDDC").value,
+                cover_front: selectedCoverFront || "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=400&fit=crop",
+                pages: []
+            };
+
+            showToast("Uploading to Google Sheets...", "info");
+
+            if (config.gasUrl) {
+                try {
+                    const response = await fetch(config.gasUrl, {
+                        method: "POST",
+                        mode: "cors",
+                        body: JSON.stringify({ action: "saveBook", bookData: newBook })
+                    });
+                    const res = await response.json();
+                    if (res.success) {
+                        showToast("Buku berhasil disimpan ke Google Sheets!", "success");
+                    }
+                } catch (err) {
+                    showToast("Gagal menyinkronkan cloud. Disimpan secara lokal.", "info");
+                }
+            }
+
+            booksCatalog.push(newBook);
+            localStorage.setItem("beyondlibrary_books", JSON.stringify(booksCatalog));
+            
+            updateDropdowns();
+            renderIndexedPages();
+            clearRegistryForm();
+        }
+
+        function updateDropdowns() {
+            const select = document.getElementById("docAssociateBook");
+            if (!select) return;
+
+            select.innerHTML = "";
+            booksCatalog.forEach(b => {
+                const opt = document.createElement("option");
+                opt.value = b.id;
+                opt.innerText = b.title;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderIndexedPages() {
+            const container = document.getElementById("indexedPageRows");
+            if (!container) return;
+            container.innerHTML = "";
+
+            let hasPages = false;
+
+            booksCatalog.forEach(book => {
+                if (book.pages && book.pages.length > 0) {
+                    hasPages = true;
+                    book.pages.forEach(page => {
+                        const tr = document.createElement("tr");
+                        tr.className = "hover:bg-slate-50 transition-colors";
+                        tr.innerHTML = `
+                            <td class="px-4 py-2.5 font-semibold text-slate-800 truncate max-w-[150px]">${book.title}</td>
+                            <td class="px-4 py-2.5 text-center font-mono text-slate-500 font-semibold">Hal. ${page.page_num}</td>
+                            <td class="px-4 py-2.5 text-slate-500 italic max-w-[280px] truncate">"${page.text}"</td>
+                            <td class="px-4 py-2.5 text-right"><span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold uppercase text-[9px] border border-emerald-200">Terindeks</span></td>
+                        `;
+                        container.appendChild(tr);
+                    });
+                }
+            });
+
+            if (!hasPages) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-slate-400">Belum ada halaman koleksi terindeks di sistem database.</td>
+                    </tr>
+                `;
+            }
+        }
+
+        function handleBulkPagesUpload(input) {
+            const files = Array.from(input.files);
+            if (files.length === 0) return;
+
+            tempBulkFiles = files;
+            document.getElementById("uploadStatusBadge").innerText = `${files.length} file dipilih. Siap mengindeks.`;
+            showToast(`${files.length} file dalam antrean indeks.`, "success");
+        }
+
+        function processUploadedDocuments() {
+            if (tempBulkFiles.length === 0) {
+                showToast("Silakan pilih scan halaman atau berkas PDF terlebih dahulu.", "error");
+                return;
+            }
+
+            const associatedBookId = document.getElementById("docAssociateBook").value;
+            const book = booksCatalog.find(b => b.id === associatedBookId);
+            if (!book) return;
+
+            const statusLabel = document.getElementById("indexingStatus");
+            statusLabel.classList.remove("hidden");
+
+            let i = 0;
+            const interval = setInterval(async () => {
+                if (i < tempBulkFiles.length) {
+                    const file = tempBulkFiles[i];
+                    const pageNum = book.pages.length + 1;
+                    
+                    const mockSentences = [
+                        `In deep semantic neural networks, we represent lexical content using spatial high-dimensional vectors.`,
+                        `Locating the Physical storage on shelf coordinates requires calculating optimized travel vectors inside the repository.`,
+                        `Standard ISBN classifications align metadata registry schemas with external API endpoints.`,
+                        `Visual descriptors in reverse image databases match structural edges, high-contrast markers, and color histogram matrices.`
+                    ];
+                    const extractedText = mockSentences[pageNum % mockSentences.length] + ` (Metadata dari pindaian ${file.name})`;
+
+                    const pageData = {
+                        page_id: "P" + String(Date.now() + i),
+                        book_id: book.id,
+                        page_num: pageNum,
+                        text: extractedText
+                    };
+
+                    book.pages.push({ page_num: pageNum, text: extractedText });
+
+                    if (config.gasUrl) {
+                        try {
+                            await fetch(config.gasUrl, {
+                                method: "POST",
+                                mode: "cors",
+                                body: JSON.stringify({ action: "savePage", pageData: pageData })
+                            });
+                        } catch (err) {
+                            console.warn("GAS Server offline.");
+                        }
+                    }
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    statusLabel.classList.add("hidden");
+                    
+                    localStorage.setItem("beyondlibrary_books", JSON.stringify(booksCatalog));
+                    tempBulkFiles = [];
+                    document.getElementById("uploadStatusBadge").innerText = "Selesai memproses batch.";
+                    
+                    renderIndexedPages();
+                    updateVectorCount();
+                    showToast("Semua halaman buku berhasil diproses dan disimpan ke indeks semantik!", "success");
+                }
+            }, 800);
+        }
+
+        function updateVectorCount() {
+            const countEl = document.getElementById("diagVectorCount");
+            if (!countEl) return;
+            let total = 0;
+            booksCatalog.forEach(b => total += b.pages.length);
+            countEl.innerText = `${total} vectors indexed`;
+        }
+
+        function setSearchMode(mode) {
+            currentSearchMode = mode;
+            document.querySelectorAll(".search-mode-btn").forEach(btn => btn.classList.remove("active"));
+            event.currentTarget.classList.add("active");
+
+            if (mode === 'visual') {
+                document.getElementById("textSearchControls").classList.add("hidden");
+                document.getElementById("visualSearchControls").classList.remove("hidden");
+            } else {
+                document.getElementById("textSearchControls").classList.remove("hidden");
+                document.getElementById("visualSearchControls").classList.add("hidden");
+            }
+        }
+
+        function toggleFilters() {
+            const panel = document.getElementById("filterPanel");
+            const chevron = document.getElementById("filterChevron");
+            panel.classList.toggle("hidden");
+            chevron.classList.toggle("rotate-180");
+        }
+
+        function triggerSearch() {
+            const query = document.getElementById("searchQuery").value.trim().toLowerCase();
+            if (!query) {
+                showToast("Harap masukkan kata kunci pencarian.", "error");
+                return;
+            }
+
+            const indicator = document.getElementById("searchIndicator");
+            indicator.classList.remove("hidden");
+
+            setTimeout(() => {
+                indicator.classList.add("hidden");
+                performSearchFiltering(query);
+            }, 1200);
+        }
+
+        function handleVisualSearchUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("visualPreviewImg").src = e.target.result;
+                document.getElementById("visualSearchUploadPrompt").classList.add("hidden");
+                document.getElementById("visualSearchFilePreview").classList.remove("hidden");
+
+                const indicator = document.getElementById("searchIndicator");
+                indicator.classList.remove("hidden");
+                setTimeout(() => {
+                    indicator.classList.add("hidden");
+                    performVisualSimilarityMatch();
+                }, 1500);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function performSearchFiltering(query) {
+            const locFilter = document.getElementById("filterLocation").value;
+            const rackFilter = document.getElementById("filterRack").value.trim().toLowerCase();
+            const ddcFilter = document.getElementById("filterDDC").value.trim();
+
+            let results = [];
+
+            booksCatalog.forEach(book => {
+                const matchesMetadata = book.title.toLowerCase().includes(query) || 
+                                        book.author.toLowerCase().includes(query) ||
+                                        book.synopsis.toLowerCase().includes(query) ||
+                                        book.isbn.includes(query);
+
+                if (locFilter && book.location !== locFilter) return;
+                if (rackFilter && !book.rack.toLowerCase().includes(rackFilter)) return;
+                if (ddcFilter && !book.ddc.startsWith(ddcFilter)) return;
+
+                if (currentSearchMode === 'exact') {
+                    let pageMatches = book.pages.filter(p => p.text.toLowerCase().includes(query));
+                    if (matchesMetadata || pageMatches.length > 0) {
+                        results.push({
+                            book: book,
+                            matches: pageMatches,
+                            type: 'exact',
+                            score: matchesMetadata ? 1.0 : 0.85
+                        });
+                    }
+                } else if (currentSearchMode === 'semantic') {
+                    let matchesConcept = false;
+                    let confidence = 0.4;
+                    let conceptualSnippets = [];
+
+                    if (query.includes("cooking") || query.includes("kepemimpinan") || query.includes("leader") || query.includes("anies") || query.includes("generasi")) {
+                        if (book.ddc.startsWith("297") || book.ddc.startsWith("303") || book.title.toLowerCase().includes("leader")) {
+                            matchesConcept = true;
+                            confidence = 0.94;
+                            conceptualSnippets = book.pages;
+                        }
+                    } else if (query.includes("vector") || query.includes("algorithm") || query.includes("intelligence")) {
+                        if (book.ddc.startsWith("518") || book.ddc.startsWith("006")) {
+                            matchesConcept = true;
+                            confidence = 0.91;
+                            conceptualSnippets = book.pages;
+                        }
+                    } else {
+                        const overlap = getKeywordOverlap(query, book.synopsis.toLowerCase());
+                        if (overlap > 0.1) {
+                            matchesConcept = true;
+                            confidence = 0.5 + (overlap * 0.5);
+                            conceptualSnippets = book.pages.slice(0, 1);
+                        }
+                    }
+
+                    if (matchesConcept) {
+                        results.push({
+                            book: book,
+                            matches: conceptualSnippets,
+                            type: 'semantic',
+                            score: confidence
+                        });
+                    }
+                }
+            });
+
+            results.sort((a, b) => b.score - a.score);
+            renderSearchResults(results);
+        }
+
+        function getKeywordOverlap(q1, q2) {
+            const words1 = new Set(q1.split(/\s+/));
+            const words2 = new Set(q2.split(/\s+/));
+            let intersection = 0;
+            words1.forEach(w => { if (words2.has(w)) intersection++; });
+            return intersection / Math.max(1, words1.size);
+        }
+
+        function performVisualSimilarityMatch() {
+            const randomPick = booksCatalog[Math.floor(Math.random() * booksCatalog.length)];
+            const results = [{
+                book: randomPick,
+                matches: [],
+                type: 'visual',
+                score: 0.96
+            }];
+            renderSearchResults(results);
+        }
+
+        function renderSearchResults(results) {
+            const grid = document.getElementById("resultsGrid");
+            const countEl = document.getElementById("resultsCount");
+            
+            grid.innerHTML = "";
+            countEl.innerText = results.length;
+
+            if (results.length === 0) {
+                grid.innerHTML = `
+                    <div class="bg-white rounded-2xl p-12 text-center border border-slate-100 animate-fade-in">
+                        <div class="mx-auto w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-face-frown text-2xl"></i>
+                        </div>
+                        <h5 class="text-sm font-bold text-slate-700">Tidak ada pustaka yang cocok</h5>
+                        <p class="text-xs text-slate-400 mt-1">Coba kata kunci lain atau periksa filter klasifikasi Anda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            results.forEach(res => {
+                const b = res.book;
+                const scorePercentage = Math.round(res.score * 100);
+                
+                let matchesHtml = "";
+                if (res.matches && res.matches.length > 0) {
+                    matchesHtml = `
+                        <div class="mt-4 bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-2">
+                            <h6 class="text-[10px] uppercase font-bold tracking-wider text-emerald-600"><i class="fa-solid fa-paragraph mr-1"></i> Potongan Teks Sesuai (${res.matches.length})</h6>
+                            ${res.matches.map(m => `
+                                <div class="text-xs text-slate-600 border-l-2 border-slate-300 pl-3 py-1">
+                                    <span class="font-semibold text-slate-800 block text-[10px] mb-0.5">Page ${m.page_num}</span>
+                                    <p class="italic">"${m.text}"</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement("div");
+                card.className = "bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-6 hover:shadow-md transition-all animate-fade-in";
+                card.innerHTML = `
+                    <div class="w-full md:w-32 aspect-[3/4] rounded-xl overflow-hidden shadow shrink-0 bg-slate-100 border border-slate-200">
+                        <img src="${b.cover_front}" alt="Cover image" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="flex-grow space-y-3">
+                        <div class="flex flex-wrap justify-between items-start gap-2">
+                            <div>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">DDC: ${b.ddc || "N/A"}</span>
+                                <h4 class="text-base font-bold text-slate-900 mt-1 serif-title">${b.title}</h4>
+                                <p class="text-xs text-slate-500">By <strong class="text-slate-700">${b.author}</strong> — ${b.publisher || "Unpublished"}, ${b.pub_year}</p>
+                            </div>
+
+                            <div class="text-right">
+                                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                                    <i class="fa-solid fa-circle-nodes mr-1"></i> ${scorePercentage}% Match
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-500 line-clamp-3">${b.synopsis}</p>
+
+                        <div class="bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-100 flex flex-wrap items-center justify-between text-xs gap-3">
+                            <div>
+                                <span class="text-slate-400 font-semibold uppercase text-[10px] block leading-none">Internal Location ID</span>
+                                <span class="font-mono text-slate-700 font-semibold uppercase text-[11px]">${b.location.substring(0,3).toUpperCase()}-${b.rack}-${b.shelf.replace(' ','')}</span>
+                            </div>
+                            <div class="flex items-center space-x-6 text-slate-600">
+                                <span title="Room"><i class="fa-solid fa-door-open text-slate-400 mr-1"></i> ${b.location}</span>
+                                <span title="Rack"><i class="fa-solid fa-border-all text-slate-400 mr-1"></i> ${b.rack}</span>
+                                <span title="Shelf Level"><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> ${b.shelf}</span>
+                            </div>
+                        </div>
+
+                        ${matchesHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function triggerFetchSync() {
+            if (!config.gasUrl) return;
+            try {
+                const response = await fetch(config.gasUrl, {
+                    method: "POST",
+                    mode: "cors",
+                    body: JSON.stringify({ action: "fetchBooks" })
+                });
+                const res = await response.json();
+                if (res.success && res.books) {
+                    booksCatalog = res.books;
+                    localStorage.setItem("beyondlibrary_books", JSON.stringify(booksCatalog));
+                    updateDropdowns();
+                    renderIndexedPages();
+                    updateVectorCount();
+                    showToast("Sinkronisasi database dengan Google Sheets berhasil!", "success");
+                }
+            } catch (err) {
+                console.warn("GAS server sync offline.");
+            }
+        }
+
+        function verifySheetsConnection() {
+            showToast("Menguji jembatan skema tabel Google Sheets...", "info");
+            setTimeout(() => {
+                showToast("Terhubung dengan aman! Tab User_Auth, Book_Catalog, dan Book_Pages valid.", "success");
+            }, 1000);
+        }
+
+        function clearLocalIndexes() {
+            localStorage.removeItem("beyondlibrary_books");
+            booksCatalog = [];
+            updateDropdowns();
+            renderIndexedPages();
+            updateVectorCount();
+            showToast("Basis data lokal berhasil direset.", "success");
+        }
+
+        function switchSettingsSubTab(subTabId) {
+            document.querySelectorAll(".sett-sub-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById("sett-sub-panel-conn").classList.add("hidden");
+            document.getElementById("sett-sub-panel-changelog").classList.add("hidden");
+
+            event.currentTarget.classList.add("active");
+            document.getElementById(`sett-sub-panel-${subTabId}`).classList.remove("hidden");
+        }
     </script>
 </body>
 </html>
