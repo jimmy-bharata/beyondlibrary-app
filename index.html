@@ -14,6 +14,7 @@
     <div id="loginScreen" class="min-h-full flex flex-col justify-center py-12 bg-slate-900">
         <div class="sm:mx-auto sm:w-full sm:max-w-md text-center text-white">
             <h2 class="text-3xl font-extrabold">BeyondLibrary</h2>
+            <p class="text-slate-400 mt-2 text-sm">Sistem Perpustakaan Pintar</p>
         </div>
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-slate-800 py-8 px-6 shadow-2xl rounded-2xl border border-slate-700">
@@ -28,6 +29,15 @@
                     </div>
                     <button type="submit" class="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700">Masuk</button>
                 </form>
+                
+                <!-- TOMBOL TAMBAHAN UNTUK SETTING -->
+                <div class="mt-6 pt-6 border-t border-slate-700 text-center">
+                    <button onclick="document.getElementById('configPanel').classList.toggle('hidden')" class="text-xs text-slate-400 hover:text-white underline">Atur URL Backend</button>
+                    <div id="configPanel" class="hidden mt-4 text-left">
+                        <input id="configGasUrl" type="text" placeholder="https://script.google.com/..." class="w-full p-2 bg-slate-700 rounded text-white text-sm border border-slate-600">
+                        <button onclick="saveConfig()" class="w-full mt-2 py-1.5 bg-slate-600 text-white rounded text-xs font-bold">Simpan URL</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -44,33 +54,39 @@
             <div id="panel-manage" class="tab-panel hidden"><h2 class="text-xl font-bold">Management</h2></div>
             <div id="panel-settings" class="tab-panel hidden">
                 <h2 class="text-xl font-bold mb-4">Pengaturan Sistem</h2>
-                <!-- Input ini sekarang tidak memicu deteksi firewall karena tidak mengandung URL statis secara langsung -->
-                <input id="configGasUrl" type="text" placeholder="Masukkan URL Web App..." class="w-full p-2 border rounded">
-                <button onclick="saveConfig()" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded">Simpan Konfigurasi</button>
+                <input id="configGasUrlMain" type="text" placeholder="Masukkan URL Web App..." class="w-full p-2 border rounded">
+                <button onclick="saveConfigMain()" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded">Simpan Konfigurasi</button>
             </div>
         </main>
     </div>
 
     <script>
-        // Memuat URL dari localStorage
-        let url = localStorage.getItem('gasUrl') || "";
-        document.getElementById('configGasUrl').value = url;
+        // Init input values
+        let savedUrl = localStorage.getItem('gasUrl') || "";
+        document.getElementById('configGasUrl').value = savedUrl;
+        document.getElementById('configGasUrlMain').value = savedUrl;
 
         function saveConfig() {
             localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value);
-            alert("Konfigurasi tersimpan!");
+            alert("URL tersimpan!");
+            location.reload();
+        }
+
+        function saveConfigMain() {
+            localStorage.setItem('gasUrl', document.getElementById('configGasUrlMain').value);
+            alert("URL tersimpan!");
         }
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
-            const savedUrl = localStorage.getItem('gasUrl');
+            const url = localStorage.getItem('gasUrl');
 
-            if (!savedUrl) { alert("URL belum diatur di menu Pengaturan!"); return; }
+            if (!url) { alert("URL belum diatur! Klik 'Atur URL Backend' di bawah."); return; }
 
             try {
-                const response = await fetch(savedUrl, { 
+                const response = await fetch(url, { 
                     method: "POST", 
                     mode: 'cors',
                     body: JSON.stringify({ action: "login", username, password }) 
@@ -96,3 +112,13 @@
     </script>
 </body>
 </html>
+```
+
+### Langkah yang harus Anda lakukan:
+1.  **Copy** kode di atas.
+2.  **Paste** ke file `index.html` di GitHub Anda.
+3.  **Commit**.
+4.  Buka situs Anda di browser.
+5.  Klik tombol **"Atur URL Backend"** yang ada di bawah tombol Masuk.
+6.  Masukkan URL Apps Script Anda di sana dan klik **Simpan**.
+7.  Halaman akan me-*refresh* otomatis, dan sekarang Anda bisa mencoba login!
