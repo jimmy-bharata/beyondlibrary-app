@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="id" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,6 +38,7 @@
         .serif-title {
             font-family: 'Playfair Display', serif;
         }
+        /* Custom scrollbar for premium aesthetics */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -56,16 +57,16 @@
 </head>
 <body class="h-full text-slate-800 flex flex-col">
 
-    <!-- SETUP & CONFIGURATION OVERLAY -->
+    <!-- SETUP & CONFIGURATION OVERLAY (PRE-POPULATED) -->
     <div id="configOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto animate-fade-in">
             <div class="flex items-center space-x-3 mb-6">
                 <div class="p-3 bg-emerald-50 text-emerald-700 rounded-xl">
                     <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-900">Inisialisasi Sistem</h3>
-                    <p class="text-xs text-slate-500">Konfigurasi parameter branding NBT & konektivitas cloud.</p>
+                    <h3 class="text-xl font-bold text-slate-900">Inisialisasi Sistem (Demo Mode)</h3>
+                    <p class="text-xs text-slate-500">Konfigurasi parameter branding NBT & konektivitas cloud telah terisi otomatis.</p>
                 </div>
             </div>
 
@@ -102,26 +103,26 @@
 
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">URL Google Sheets</label>
-                    <input type="text" id="cfgSheetUrl" required placeholder="Masukkan link Spreadsheet Anda" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                    <input type="text" id="cfgSheetUrl" required value="https://docs.google.com/spreadsheets/d/1ObGHBHnY_mvTcbvJi1GKaHP_JO6NdyU2FL1H_S9gYDs/edit?usp=sharing" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Google Apps Script Web App URL</label>
                         <span class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">Safe Backend Sync</span>
                     </div>
-                    <input type="text" id="cfgGasUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                    <input type="text" id="cfgGasUrl" value="https://script.google.com/macros/s/AKfycby9nS95X8rpNFNsO5UkeU11v5MKGCnLO60EM8q-4h3_SFYa5ey3EswcMbs7r9UqiG8b/exec" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Gemini API Key</label>
                         <span class="text-[10px] text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full font-medium">Kunci Akses AI Vision</span>
                     </div>
-                    <input type="password" id="cfgApiKey" placeholder="Masukkan AIzaSy... untuk real-scan aktif" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                    <input type="password" id="cfgApiKey" placeholder="Masukkan AIzaSy... untuk real-scan aktif (Opsional, atau gunakan Sandbox)" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
-                        Jalankan Workspace Perpustakaan
+                    <button type="submit" class="w-full text-white font-semibold py-2.5 rounded-lg text-sm transition-all shadow-md hover:opacity-90 animate-pulse" style="background-color: var(--color-primary)">
+                        Jalankan Workspace Demo Sekarang
                     </button>
                 </div>
             </form>
@@ -203,7 +204,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                                 <i class="fa-solid fa-user"></i>
                             </div>
-                            <input id="username" name="username" type="text" required class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                            <input id="username" name="username" type="text" required value="admin" class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
                         </div>
                     </div>
 
@@ -213,13 +214,13 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
                                 <i class="fa-solid fa-lock"></i>
                             </div>
-                            <input id="password" name="password" type="password" required class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
+                            <input id="password" name="password" type="password" required value="123" class="block w-full pl-10 pr-3 py-2.5 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm">
                         </div>
                     </div>
 
                     <div>
-                        <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white transition-colors" style="background-color: var(--color-accent)">
-                            Masuk ke Sistem
+                        <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white transition-colors animate-pulse" style="background-color: var(--color-accent)">
+                            Masuk ke Sistem (Demo-Autologin)
                         </button>
                     </div>
                 </form>
@@ -238,7 +239,7 @@
         <!-- Sidebar Navigation -->
         <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col border-r border-slate-800">
             <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
-                <img id="navLogo" src="logo-NBT.png" alt="BeyondLibrary Logo" class="h-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/50">
+                <img id="navLogo" src="logo-NBT.png" alt="BeyondLibrary Logo" class="h-10 w-10 rounded-xl object-cover ring-2 ring-emerald-500/50">
                 <div class="overflow-hidden">
                     <h2 id="navTitle" class="text-lg font-bold text-white leading-tight serif-title truncate">BeyondLibrary</h2>
                     <span class="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full inline-block w-max font-semibold border border-emerald-800">v1.5.0</span>
@@ -323,7 +324,7 @@
                             <div class="flex gap-2">
                                 <div class="relative flex-grow">
                                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                    <input type="text" id="searchQuery" placeholder="Search physical book library..." class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                                    <input type="text" id="searchQuery" placeholder="Cari buku, penulis, kata kunci atau isi kutipan..." class="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                                 </div>
                                 <button onclick="triggerSearch()" class="text-white font-medium px-6 py-3 rounded-xl text-sm transition-colors flex items-center space-x-2 shrink-0 hover:opacity-90" style="background-color: var(--color-primary)">
                                     <i class="fa-solid fa-search"></i>
@@ -340,13 +341,13 @@
                                         <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-semibold text-slate-700">Upload Image to Begin Visual Comparison</p>
-                                        <p class="text-xs text-slate-400 mt-1">JPG, PNG or GIF up to 5MB</p>
+                                        <p class="text-sm font-semibold text-slate-700">Unggah Gambar Cover untuk Reverse Image Search</p>
+                                        <p class="text-xs text-slate-400 mt-1">JPG, PNG atau GIF maks. 5MB</p>
                                     </div>
                                 </div>
                                 <div id="visualSearchFilePreview" class="hidden flex flex-col items-center space-y-2">
                                     <img id="visualPreviewImg" class="h-32 rounded-lg object-contain border shadow">
-                                    <span class="text-xs font-semibold text-emerald-600 hover:underline">Change image</span>
+                                    <span class="text-xs font-semibold text-emerald-600 hover:underline">Ganti Gambar</span>
                                 </div>
                             </div>
                         </div>
@@ -355,7 +356,7 @@
                         <div class="mt-4 border-t border-slate-100 pt-4">
                             <button onclick="toggleFilters()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center space-x-1">
                                 <i class="fa-solid fa-sliders"></i>
-                                <span>Refine with Filters</span>
+                                <span>Persempit dengan Filter Rak Fisik</span>
                                 <i class="fa-solid fa-chevron-down text-[10px]" id="filterChevron"></i>
                             </button>
                             
@@ -371,11 +372,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Nomor Rak</label>
-                                    <input type="text" id="filterRack" placeholder="e.g. RAK-05" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    <input type="text" id="filterRack" placeholder="Contoh: RAK-01" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">DDC Classification Code</label>
-                                    <input type="text" id="filterDDC" placeholder="e.g. 641.5" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Kode Klasifikasi DDC</label>
+                                    <input type="text" id="filterDDC" placeholder="Contoh: 518.1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                 </div>
                             </div>
                         </div>
@@ -396,8 +397,8 @@
                                 <div class="mx-auto w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
                                     <i class="fa-solid fa-folder-open text-2xl"></i>
                                 </div>
-                                <h5 class="text-sm font-bold text-slate-700">No Search Queries Performed</h5>
-                                <p class="text-xs text-slate-400 mt-1">Enter search terms or trigger semantic analysis to find matching books.</p>
+                                <h5 class="text-sm font-bold text-slate-700">Belum ada pencarian yang dilakukan</h5>
+                                <p class="text-xs text-slate-400 mt-1">Gunakan kotak teks di atas untuk mencari buku koleksi atau teks terindeks.</p>
                             </div>
                         </div>
                     </div>
@@ -412,7 +413,7 @@
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h3 class="text-lg font-bold text-slate-900 serif-title">Pendaftaran Buku Baru</h3>
-                                    <p class="text-xs text-slate-500 mt-1">Aktifkan jendela bidik kamera internal, capture frame, dan scan otomatis metadata buku.</p>
+                                    <p class="text-xs text-slate-500 mt-1">Aktifkan kamera live, capture cover depan & belakang, lalu scan otomatis metadata buku.</p>
                                 </div>
                                 <button onclick="toggleLiveCamera()" id="toggleCamBtn" class="text-xs font-bold text-white bg-[#1b2e4b] px-3 py-1.5 rounded-lg hover:opacity-90 transition-all flex items-center space-x-1">
                                     <i class="fa-solid fa-video"></i>
@@ -483,11 +484,11 @@
                             <form id="bookRegistryForm" onsubmit="saveBookRegistry(event)" class="space-y-4 text-xs">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="col-span-2">
-                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Book Title</label>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Judul Buku</label>
                                         <input type="text" id="regTitle" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                     </div>
                                     <div>
-                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Author</label>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Penulis</label>
                                         <input type="text" id="regAuthor" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                     </div>
                                     <div>
@@ -495,24 +496,24 @@
                                         <input type="text" id="regISBN" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                     </div>
                                     <div>
-                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Publisher</label>
-                                        <input type="text" id="regISBN" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Penerbit</label>
+                                        <input type="text" id="regPublisher" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                     </div>
                                     <div>
-                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Publication Year</label>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Tahun Terbit</label>
                                         <input type="number" id="regPubYear" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                     </div>
                                     <div class="col-span-2">
-                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Synopsis / General Notes</label>
+                                        <label class="block font-semibold uppercase text-slate-400 mb-1">Sinopsis / Catatan Umum</label>
                                         <textarea id="regSynopsis" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
                                     </div>
                                 </div>
 
                                 <div class="border-t border-slate-100 pt-3">
-                                    <h4 class="font-bold mb-3 text-xs uppercase tracking-wider text-emerald-600"><i class="fa-solid fa-map-pin mr-1"></i> Shelf & Location Control</h4>
+                                    <h4 class="font-bold mb-3 text-xs uppercase tracking-wider text-emerald-600"><i class="fa-solid fa-map-pin mr-1"></i> Kontrol Rak & Lokasi Fisik</h4>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Library Room / Location</label>
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Ruangan / Lokasi Perpustakaan</label>
                                             <select id="regLocation" required class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                                 <option value="Main Library Hall">Main Library Hall</option>
                                                 <option value="Research Wing">Research Wing</option>
@@ -520,16 +521,16 @@
                                             </select>
                                         </div>
                                         <div>
-                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Rack / Cabinet Code</label>
-                                            <input type="text" id="regRack" required placeholder="e.g. RAK-05" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Kode Rak / Lemari</label>
+                                            <input type="text" id="regRack" required placeholder="Contoh: RAK-01" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                         </div>
                                         <div>
-                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Shelf Level</label>
-                                            <input type="text" id="regShelf" required placeholder="e.g. Shelf B" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Level Ambalan / Baris Rak</label>
+                                            <input type="text" id="regShelf" required placeholder="Contoh: Shelf A" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                         </div>
                                         <div>
-                                            <label class="block font-semibold uppercase text-slate-400 mb-1">DDC Classification Code</label>
-                                            <input type="text" id="regDDC" placeholder="e.g. 641.5" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                            <label class="block font-semibold uppercase text-slate-400 mb-1">Kode Klasifikasi DDC</label>
+                                            <input type="text" id="regDDC" placeholder="Contoh: 518.1" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
                                         </div>
                                     </div>
                                 </div>
@@ -539,8 +540,8 @@
                                         Reset Form
                                     </button>
                                     <button type="submit" class="flex-1 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
-                                        Save to Database
-                                    </button>
+                                        Simpan ke Database
+                    </button>
                                 </div>
                             </form>
                         </div>
@@ -553,14 +554,14 @@
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                         <div class="mb-6">
                             <h3 class="text-lg font-bold text-slate-900 serif-title">Page-by-Page Intelligent Indexer</h3>
-                            <p class="text-xs text-slate-500 mt-1">Unggah pindaian halaman buku secara individual. Sistem akan mengindeks konten tersebut guna mengaktifkan pencarian kutipan instan.</p>
+                            <p class="text-xs text-slate-500 mt-1">Unggah pindaian halaman buku secara individual. Sistem akan mengekstrak tulisan dan menyimpannya di indeks kutipan instan.</p>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             
                             <!-- File upload & Queue Area -->
                             <div class="space-y-4 lg:col-span-1 border-r border-slate-100 pr-0 lg:pr-6">
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Unggah Dokumen</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Unggah Berkas Halaman</label>
                                 <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer" onclick="document.getElementById('bulkPagesFile').click()">
                                     <input type="file" id="bulkPagesFile" accept="image/*,application/pdf" multiple class="hidden" onchange="handleBulkPagesUpload(this)">
                                     <div class="space-y-2">
@@ -568,8 +569,8 @@
                                             <i class="fa-solid fa-file-pdf text-lg"></i>
                                         </div>
                                         <div>
-                                            <span class="text-xs font-semibold text-slate-700 block">Select PDF or Page JPGs</span>
-                                            <span id="uploadStatusBadge" class="text-[10px] text-slate-400 block mt-0.5">Up to 20 pages per batch</span>
+                                            <span class="text-xs font-semibold text-slate-700 block">Pilih PDF atau JPG Halaman</span>
+                                            <span id="uploadStatusBadge" class="text-[10px] text-slate-400 block mt-0.5">Maks. 20 halaman per kloter</span>
                                         </div>
                                     </div>
                                 </div>
@@ -583,14 +584,14 @@
                                 </div>
 
                                 <button onclick="processUploadedDocuments()" class="w-full text-white font-semibold py-2.5 rounded-lg text-xs transition-colors shadow-md hover:opacity-90" style="background-color: var(--color-primary)">
-                                    Run Intelligent Page OCR & Indexing
+                                    Ekstrak & Indeks Halaman Buku (OCR AI)
                                 </button>
                             </div>
 
                             <!-- User Friendly Repository Monitor -->
                             <div class="lg:col-span-2 space-y-4">
                                 <div class="flex items-center justify-between">
-                                    <h4 class="text-xs font-semibold tracking-wider uppercase text-slate-400">Repositior Halaman Terindeks</h4>
+                                    <h4 class="text-xs font-semibold tracking-wider uppercase text-slate-400">Repositori Halaman Terindeks</h4>
                                     <div class="flex items-center space-x-2">
                                         <span id="indexingStatus" class="hidden text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded animate-pulse">
                                             <i class="fa-solid fa-spinner animate-spin mr-1"></i> Prosedur Ekstraksi Aktif
@@ -624,8 +625,8 @@
                 <section id="panel-settings" class="tab-panel hidden space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
                         <div class="border-b border-slate-100 pb-3 mb-6">
-                            <h3 class="text-lg font-bold text-slate-900 serif-title">Sistem & Tata Kelola Kode</h3>
-                            <p class="text-xs text-slate-500 mt-1">Konfigurasi jembatan cloud, riwayat pembaruan, dan status audit log dev.</p>
+                            <h3 class="text-lg font-bold text-slate-900 serif-title">Sistem & Tata Kelola Jaringan</h3>
+                            <p class="text-xs text-slate-500 mt-1">Konfigurasi jembatan cloud, riwayat pembaruan sistem, dan status audit log.</p>
                         </div>
                         
                         <!-- Toggle Tab Settings Internal -->
@@ -652,7 +653,7 @@
                                 </div>
                                 <div class="text-xs space-y-1.5 text-slate-600">
                                     <p><strong>Configured ID:</strong> <span id="diagSheetId" class="font-mono text-slate-500 truncate block">...</span></p>
-                                    <p><strong>Registry Link:</strong> <a id="diagSheetLink" href="#" target="_blank" class="text-emerald-600 underline">View Raw Sheets</a></p>
+                                    <p><strong>Registry Link:</strong> <a id="diagSheetLink" href="#" target="_blank" class="text-emerald-600 underline">Buka Google Sheets</a></p>
                                 </div>
                                 <button onclick="verifySheetsConnection()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-xs transition-colors">
                                     Uji Sinkronisasi Google Sheets
@@ -674,7 +675,7 @@
                                     <p><strong>Indexed Embeddings:</strong> <span id="diagVectorCount" class="font-mono text-slate-500 font-bold">0 vectors</span></p>
                                 </div>
                                 <button onclick="clearLocalIndexes()" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-semibold py-2 rounded-lg text-xs transition-colors border border-red-200">
-                                    Purge Embedded Indexes
+                                    Hapus Indeks Vektor Lokal
                                 </button>
                             </div>
                         </div>
@@ -714,18 +715,16 @@
 
     <!-- MAIN JAVASCRIPT LOGIC -->
     <script>
-        // =========================================================================
-        // GITHUB SECURITY REVISION: Default Config cleaned to protect direct leaks
-        // =========================================================================
+        // Default Config & Storage Namespaces (RESTORED DEMO VARIABLES)
         let config = {
             appTitle: "BeyondLibrary",
             appOwner: "Neo Beyond Tech",
             logoUrl: "logo-NBT.png",
             colorPrimary: "#1b2e4b",
             colorAccent: "#3bb44a",
-            sheetUrl: "", // CLEANED FOR GITHUB DEPLOYMENT SECURITY
-            gasUrl: "",   // CLEANED FOR GITHUB DEPLOYMENT SECURITY
-            apiKey: ""    // CLEANED FOR GITHUB DEPLOYMENT SECURITY
+            sheetUrl: "https://docs.google.com/spreadsheets/d/1ObGHBHnY_mvTcbvJi1GKaHP_JO6NdyU2FL1H_S9gYDs/edit?usp=sharing",
+            gasUrl: "https://script.google.com/macros/s/AKfycby9nS95X8rpNFNsO5UkeU11v5MKGCnLO60EM8q-4h3_SFYa5ey3EswcMbs7r9UqiG8b/exec",
+            apiKey: ""
         };
 
         const USER_DB = [
@@ -769,6 +768,7 @@
                 populateConfigFields();
                 applyWhiteLabelBranding();
             } else {
+                populateConfigFields();
                 applyWhiteLabelBranding();
             }
 
@@ -789,7 +789,7 @@
             document.getElementById("cfgLogoUrl").value = config.logoUrl || "logo-NBT.png";
             document.getElementById("cfgColorPrimary").value = config.colorPrimary || "#1b2e4b";
             document.getElementById("cfgColorAccent").value = config.colorAccent || "#3bb44a";
-            document.getElementById("cfgSheetUrl").value = config.sheetUrl || "";
+            document.getElementById("cfgSheetUrl").value = config.sheetUrl;
             document.getElementById("cfgGasUrl").value = config.gasUrl || "";
             document.getElementById("cfgApiKey").value = config.apiKey || "";
         }
@@ -840,9 +840,9 @@
 
             document.getElementById("navTitle").innerText = config.appTitle;
 
-            document.getElementById("sheetLink").href = config.sheetUrl || "#";
-            document.getElementById("diagSheetLink").href = config.sheetUrl || "#";
-            document.getElementById("diagSheetId").innerText = config.sheetUrl ? extractSheetId(config.sheetUrl) : "Belum terkonfigurasi";
+            document.getElementById("sheetLink").href = config.sheetUrl;
+            document.getElementById("diagSheetLink").href = config.sheetUrl;
+            document.getElementById("diagSheetId").innerText = extractSheetId(config.sheetUrl);
             
             document.title = `${config.appTitle} - Intelligent Library System`;
 
@@ -861,6 +861,38 @@
         function extractSheetId(url) {
             const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             return match ? match[1] : "Direct Spreadsheet Link";
+        }
+
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            toast.className = `flex items-center space-x-2.5 px-4 py-3 rounded-xl text-xs font-semibold shadow-xl border transition-all transform translate-y-2 opacity-0 duration-300 ${
+                type === "success" ? "bg-emerald-50 text-emerald-800 border-emerald-200" :
+                type === "error" ? "bg-rose-50 text-rose-800 border-rose-200" : "bg-slate-50 text-slate-800 border-slate-200"
+            }`;
+            
+            const icon = type === "success" ? "fa-circle-check" : type === "error" ? "fa-circle-exclamation" : "fa-info-circle";
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function switchSettingsSubTab(subTabId) {
+            document.querySelectorAll(".sett-sub-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById("sett-sub-panel-conn").classList.add("hidden");
+            document.getElementById("sett-sub-panel-changelog").classList.add("hidden");
+
+            event.currentTarget.classList.add("active");
+            document.getElementById(`sett-sub-panel-${subTabId}`).classList.remove("hidden");
         }
 
         async function handleLogin(e) {
@@ -945,6 +977,7 @@
             document.getElementById("pageHeaderTitle").innerText = headerTitles[tabId];
         }
 
+        // CAMERA LIFECYCLE CONTROLS
         async function toggleLiveCamera() {
             const container = document.getElementById("liveCameraContainer");
             const btnSpan = document.querySelector("#toggleCamBtn span");
@@ -1153,8 +1186,8 @@
             document.getElementById("regPubYear").value = data.pub_year || "";
             document.getElementById("regSynopsis").value = data.synopsis || "";
             document.getElementById("regDDC").value = data.ddc || "";
-            document.getElementById("regRack").value = "RAK-6";
-            document.getElementById("regShelf").value = "Level A";
+            document.getElementById("regRack").value = "RAK-01";
+            document.getElementById("regShelf").value = "Shelf B";
         }
 
         function clearRegistryForm() {
@@ -1188,7 +1221,7 @@
                 pages: []
             };
 
-            showToast("Uploading to Google Sheets...", "info");
+            showToast("Menyimpan ke Cloud Spreadsheet...", "info");
 
             if (config.gasUrl) {
                 try {
@@ -1515,7 +1548,7 @@
                             <h6 class="text-[10px] uppercase font-bold tracking-wider text-emerald-600"><i class="fa-solid fa-paragraph mr-1"></i> Potongan Teks Sesuai (${res.matches.length})</h6>
                             ${res.matches.map(m => `
                                 <div class="text-xs text-slate-600 border-l-2 border-slate-300 pl-3 py-1">
-                                    <span class="font-semibold text-slate-800 block text-[10px] mb-0.5">Page ${m.page_num}</span>
+                                    <span class="font-semibold text-slate-800 block text-[10px] mb-0.5">Halaman ${m.page_num}</span>
                                     <p class="italic">"${m.text}"</p>
                                 </div>
                             `).join('')}
@@ -1533,9 +1566,9 @@
                     <div class="flex-grow space-y-3">
                         <div class="flex flex-wrap justify-between items-start gap-2">
                             <div>
-                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">DDC: ${b.ddc || "N/A"}</span>
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-mono">DDC: ${b.ddc || "N/A"}</span>
                                 <h4 class="text-base font-bold text-slate-900 mt-1 serif-title">${b.title}</h4>
-                                <p class="text-xs text-slate-500">By <strong class="text-slate-700">${b.author}</strong> — ${b.publisher || "Unpublished"}, ${b.pub_year}</p>
+                                <p class="text-xs text-slate-500">Oleh <strong class="text-slate-700">${b.author}</strong> — ${b.publisher || "Tanpa Penerbit"}, ${b.pub_year}</p>
                             </div>
 
                             <div class="text-right">
@@ -1602,15 +1635,6 @@
             renderIndexedPages();
             updateVectorCount();
             showToast("Basis data lokal berhasil direset.", "success");
-        }
-
-        function switchSettingsSubTab(subTabId) {
-            document.querySelectorAll(".sett-sub-btn").forEach(btn => btn.classList.remove("active"));
-            document.getElementById("sett-sub-panel-conn").classList.add("hidden");
-            document.getElementById("sett-sub-panel-changelog").classList.add("hidden");
-
-            event.currentTarget.classList.add("active");
-            document.getElementById(`sett-sub-panel-${subTabId}`).classList.remove("hidden");
         }
     </script>
 </body>
