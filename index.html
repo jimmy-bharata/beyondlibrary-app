@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BeyondLibrary Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>.tab-panel.hidden { display: none; }</style>
 </head>
 <body class="h-full text-slate-800">
@@ -41,7 +40,7 @@
     <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
         <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-4">
             <button onclick="switchTab('search')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pencarian</button>
-            <button id="navAdminManage" onclick="hidden" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
+            <button id="navAdminManage" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
             <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pengaturan</button>
         </aside>
         <main class="flex-grow p-8">
@@ -62,8 +61,7 @@
 
         function saveConfig() {
             localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value);
-            alert("URL tersimpan! Silakan refresh halaman.");
-            location.reload();
+            alert("URL tersimpan!"); location.reload();
         }
 
         function saveConfigMain() {
@@ -88,14 +86,14 @@
 
                 const textResponse = await response.text();
                 
-                let data;
-                try {
-                    data = JSON.parse(textResponse);
-                } catch (e) {
-                    console.error("Server tidak mengirim JSON:", textResponse);
-                    alert("Error: Server tidak mengirim format JSON. Respon server: " + textResponse.substring(0, 50));
+                // Debugging: Jika server mengirim teks aneh, alert agar kita tahu
+                if (!textResponse.trim().startsWith('{')) {
+                    alert("Error dari Server (Bukan JSON):\n" + textResponse.substring(0, 100));
+                    console.error("Respon Server:", textResponse);
                     return;
                 }
+
+                const data = JSON.parse(textResponse);
 
                 if (data.success) {
                     document.getElementById("loginScreen").classList.add("hidden");
@@ -107,7 +105,8 @@
                     alert("Gagal: " + (data.error || "Login gagal"));
                 }
             } catch (err) {
-                alert("Koneksi gagal. Pastikan URL benar.");
+                alert("Koneksi gagal. Cek Konsol (F12) untuk detail.");
+                console.error(err);
             }
         });
 
