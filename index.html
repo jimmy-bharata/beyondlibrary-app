@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeyondLibrary</title>
+    <title>BeyondLibrary Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.hidden { display: none; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>.tab-panel.hidden { display: none; }</style>
 </head>
 <body class="h-full text-slate-800">
 
@@ -15,7 +16,7 @@
             <h2 class="text-3xl font-extrabold">BeyondLibrary</h2>
             <!-- TOMBOL PENGATURAN DI LAYAR LOGIN -->
             <button onclick="document.getElementById('configPanel').classList.toggle('hidden')" class="mt-4 text-xs text-slate-400 underline">Atur URL Backend</button>
-            <div id="configPanel" class="hidden mt-4 p-4 bg-slate-800 rounded-lg text-left">
+            <div id="configPanel" class="hidden mt-4 p-4 bg-slate-800 rounded-lg text-left border border-slate-700">
                 <input id="configGasUrl" type="text" placeholder="https://script.google.com/..." class="w-full p-2 bg-slate-700 rounded text-white text-sm border border-slate-600">
                 <button onclick="saveConfig()" class="w-full mt-2 py-1.5 bg-emerald-600 text-white rounded text-xs font-bold">Simpan URL</button>
             </div>
@@ -37,16 +38,29 @@
         </div>
     </div>
 
-    <!-- MAIN APP SCREEN (SAMA SEPERTI SEBELUMNYA) -->
+    <!-- MAIN APP SCREEN -->
     <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-4">
+            <button onclick="switchTab('search')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pencarian</button>
+            <button id="navAdminManage" onclick="switchTab('manage')" class="hidden w-full text-left p-3 hover:bg-slate-800 rounded text-amber-500">Management</button>
+            <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded">Pengaturan</button>
+        </aside>
         <main class="flex-grow p-8">
-            <h2 class="text-xl font-bold">Selamat Datang di BeyondLibrary!</h2>
+            <div id="panel-search" class="tab-panel"><h2 class="text-xl font-bold">Pencarian</h2></div>
+            <div id="panel-manage" class="tab-panel hidden"><h2 class="text-xl font-bold">Management</h2></div>
+            <div id="panel-settings" class="tab-panel hidden">
+                <h2 class="text-xl font-bold mb-4">Pengaturan Sistem</h2>
+                <input id="configGasUrlMain" type="text" placeholder="URL Web App..." class="w-full p-2 border rounded">
+                <button onclick="saveConfigMain()" class="mt-4 bg-emerald-600 text-white px-4 py-2 rounded">Simpan</button>
+            </div>
         </main>
     </div>
 
     <script>
+        // Init input values
         let savedUrl = localStorage.getItem('gasUrl') || "";
         document.getElementById('configGasUrl').value = savedUrl;
+        document.getElementById('configGasUrlMain').value = savedUrl;
 
         function saveConfig() {
             localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value);
@@ -54,21 +68,43 @@
             location.reload();
         }
 
+        function saveConfigMain() {
+            localStorage.setItem('gasUrl', document.getElementById('configGasUrlMain').value);
+            alert("URL tersimpan!");
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
             const url = localStorage.getItem('gasUrl');
+
             if (!url) { alert("URL belum diatur! Klik 'Atur URL Backend' di atas."); return; }
-            
-            // Logika fetch Anda ...
-            alert("Mencoba login ke: " + url);
+
+            try {
+                const response = await fetch(url, { 
+                    method: "POST", 
+                    mode: 'cors',
+                    body: JSON.stringify({ action: "login", username, password }) 
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById("loginScreen").classList.add("hidden");
+                    document.getElementById("mainApp").classList.remove("hidden");
+                    if (data.user?.role === 'admin') document.getElementById("navAdminManage").classList.remove("hidden");
+                } else {
+                    alert("Gagal: " + (data.error || "Login gagal"));
+                }
+            } catch (err) {
+                alert("Koneksi gagal. Pastikan URL Apps Script benar dan di-deploy sebagai 'Anyone'.");
+            }
         });
+
+        function switchTab(tab) {
+            document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+            document.getElementById(`panel-${tab}`).classList.remove("hidden");
+        }
     </script>
 </body>
 </html>
-```
-
-### Langkah untuk Anda:
-1. **Ganti** seluruh isi `index.html` di GitHub dengan kode di atas.
-2. **Commit**.
-3. **Penting:** Setelah *GitHub Actions* selesai (tanda centang hijau muncul), **buka website Anda di mode Incognito (Private Window)** untuk memastikan Anda tidak melihat *cache* versi lama.
-4. Klik **"Atur URL Backend"** di layar login untuk memasukkan URL Anda.
