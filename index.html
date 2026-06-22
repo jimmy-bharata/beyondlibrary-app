@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeyondLibrary Workspace</title>
+    <title>BeyondLibrary Professional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>.tab-panel.hidden { display: none; }</style>
@@ -12,95 +12,89 @@
 
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="min-h-full flex flex-col justify-center py-12 bg-slate-900">
-        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center text-white">
-            <h2 class="text-3xl font-extrabold mb-8 serif-title">BeyondLibrary</h2>
-        </div>
-        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div class="bg-slate-800 py-8 px-6 shadow-2xl rounded-2xl border border-slate-700">
-                <form id="loginForm" class="space-y-4">
-                    <input id="username" type="text" placeholder="Username" required class="block w-full p-2.5 bg-slate-700 rounded-lg text-white">
-                    <input id="password" type="password" placeholder="Password" required class="block w-full p-2.5 bg-slate-700 rounded-lg text-white">
-                    <button type="submit" class="w-full py-2.5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700">Masuk</button>
-                </form>
-            </div>
+        <div class="text-center text-white mb-8"><h2 class="text-3xl font-bold">BeyondLibrary Workspace</h2></div>
+        <div class="sm:mx-auto sm:w-full sm:max-w-md bg-slate-800 p-8 rounded-2xl border border-slate-700">
+            <form id="loginForm" class="space-y-4">
+                <input id="username" type="text" placeholder="Username" required class="w-full p-3 bg-slate-700 rounded-lg text-white">
+                <input id="password" type="password" placeholder="Password" required class="w-full p-3 bg-slate-700 rounded-lg text-white">
+                <button type="submit" class="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700">Masuk</button>
+            </form>
         </div>
     </div>
 
     <!-- MAIN APP SCREEN -->
     <div id="mainApp" class="hidden min-h-full flex flex-col md:flex-row bg-slate-50">
-        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 p-4">
-            <h2 class="text-white font-bold mb-4 px-2">Menu Utama</h2>
-            <button onclick="switchTab('manage')" class="w-full text-left p-3 hover:bg-slate-800 rounded transition"><i class="fa-solid fa-book mr-2"></i> Manajemen Buku</button>
-            <button onclick="switchTab('scan')" class="w-full text-left p-3 hover:bg-slate-800 rounded transition"><i class="fa-solid fa-camera mr-2"></i> AI Cover Scan</button>
-            <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded transition"><i class="fa-solid fa-sliders mr-2"></i> Pengaturan</button>
+        <aside class="w-64 bg-slate-900 text-slate-300 p-4">
+            <button onclick="switchTab('manage')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-book mr-2"></i> Manajemen Buku</button>
+            <button onclick="switchTab('scan')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-camera mr-2"></i> AI Cover Scan</button>
+            <button onclick="switchTab('settings')" class="w-full text-left p-3 hover:bg-slate-800 rounded"><i class="fa fa-sliders mr-2"></i> Pengaturan</button>
         </aside>
-        <main class="flex-grow p-8">
-            <div id="panel-manage" class="tab-panel">
-                <h2 class="text-2xl font-bold mb-6 text-slate-900">Daftar Buku</h2>
-                <div id="bookList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <p class="text-slate-500 italic">Memuat data dari database...</p>
-                </div>
-            </div>
-            <div id="panel-scan" class="tab-panel hidden">
+
+        <main class="flex-grow p-8 overflow-y-auto">
+            <!-- PANEL SCAN -->
+            <div id="panel-scan" class="tab-panel hidden max-w-2xl mx-auto">
                 <h2 class="text-2xl font-bold mb-4">AI Cover Scan</h2>
-                <div class="bg-white p-6 rounded-lg shadow border border-slate-200">
-                    <p class="mb-4">Gunakan kamera untuk memindai cover buku dan ekstrak metadata otomatis.</p>
-                    <button onclick="alert('Fitur kamera aktif...')" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold">Mulai Scan</button>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="border-2 border-dashed p-4 text-center rounded-lg">Cover Depan</div>
+                    <div class="border-2 border-dashed p-4 text-center rounded-lg">Cover Belakang</div>
                 </div>
+                <button onclick="alert('Parsing AI aktif...')" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700">Ekstrak Metadata Buku via Gemini AI</button>
             </div>
+
+            <!-- PANEL MANAGE (ADD BOOK) -->
+            <div id="panel-manage" class="tab-panel max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6">Tambah/Edit Buku</h2>
+                <form id="bookForm" class="space-y-4 bg-white p-6 rounded shadow">
+                    <input id="inTitle" type="text" placeholder="Judul Buku" class="w-full p-2 border rounded">
+                    <input id="inAuthor" type="text" placeholder="Penulis" class="w-full p-2 border rounded">
+                    <input id="inISBN" type="text" placeholder="ISBN" class="w-full p-2 border rounded">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700">Simpan Data Buku</button>
+                </form>
+                <div id="bookList" class="mt-8"></div>
+            </div>
+
+            <!-- PANEL SETTINGS -->
             <div id="panel-settings" class="tab-panel hidden">
-                <h2 class="text-2xl font-bold mb-6">Pengaturan Sistem</h2>
-                <div class="bg-white p-6 rounded-lg shadow">
-                    <label class="block text-sm font-bold mb-2">Google Apps Script URL:</label>
-                    <input id="configGasUrl" type="text" placeholder="Masukkan URL Web App..." class="w-full p-2 border rounded mb-4">
-                    <button onclick="saveConfig()" class="bg-emerald-600 text-white px-4 py-2 rounded font-bold">Simpan Konfigurasi</button>
-                </div>
+                <h2 class="text-xl font-bold mb-4">Pengaturan Backend</h2>
+                <input id="configGasUrl" type="text" placeholder="URL Google Apps Script..." class="w-full p-2 border rounded">
+                <button onclick="saveConfig()" class="mt-4 bg-gray-600 text-white px-6 py-2 rounded">Simpan Konfigurasi</button>
             </div>
         </main>
     </div>
 
     <script>
-        const savedUrl = localStorage.getItem('gasUrl') || "";
-        document.getElementById('configGasUrl').value = savedUrl;
+        // LOAD CONFIG
+        document.getElementById('configGasUrl').value = localStorage.getItem('gasUrl') || "";
+        function saveConfig() { localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value); alert("Tersimpan!"); }
 
-        function saveConfig() { 
-            localStorage.setItem('gasUrl', document.getElementById('configGasUrl').value); 
-            alert("Konfigurasi berhasil disimpan!"); 
-        }
-
-        async function fetchBooks() {
-            if(!savedUrl) return;
-            try {
-                const response = await fetch(savedUrl, { 
-                    method: "POST", 
-                    body: JSON.stringify({ action: "fetchBooks" }) 
-                });
-                const data = await response.json();
-                const list = document.getElementById("bookList");
-                if(data.books && data.books.length > 0) {
-                    list.innerHTML = data.books.map(b => `
-                        <div class="p-4 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition">
-                            <h3 class="font-bold text-slate-900">${b.title}</h3>
-                            <p class="text-sm text-slate-600">${b.author}</p>
-                        </div>
-                    `).join('');
-                } else {
-                    list.innerHTML = "<p>Belum ada buku dalam katalog.</p>";
-                }
-            } catch (err) { console.error("Gagal ambil data:", err); }
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            document.getElementById("loginScreen").classList.add("hidden");
-            document.getElementById("mainApp").classList.remove("hidden");
-            fetchBooks();
-        });
-
+        // SWITCH TABS
         function switchTab(tab) {
             document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
             document.getElementById(`panel-${tab}`).classList.remove("hidden");
         }
+
+        // SAVE BOOK
+        document.getElementById('bookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookData = {
+                title: document.getElementById('inTitle').value,
+                author: document.getElementById('inAuthor').value,
+                isbn: document.getElementById('inISBN').value
+            };
+            
+            const response = await fetch(localStorage.getItem('gasUrl'), {
+                method: "POST",
+                body: JSON.stringify({ action: "saveBook", bookData })
+            });
+            alert("Buku berhasil ditambahkan!");
+        });
+
+        // LOGIN
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("mainApp").classList.remove("hidden");
+        });
     </script>
 </body>
 </html>
